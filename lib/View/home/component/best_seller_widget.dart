@@ -45,8 +45,8 @@ class BestSellerWidget extends StatelessWidget {
                   Radius.circular(AppSize.displayWidth(context) * 0.02)),
               child: CommonNetworkImage(
                 imageUrl: networkImage ?? "",
-                placeholder: 'assets/images/loading_placeholder.png',
-                errorPlaceholder: 'assets/images/error_image.png',
+                placeholder: 'assets/place_holder.png',
+                errorPlaceholder: 'assets/place_holder.png',
                 fit: BoxFit.fill,
                 fadeInDuration: const Duration(
                     milliseconds: 500), // Optional: Adjust fade duration

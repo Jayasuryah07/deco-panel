@@ -1,6 +1,7 @@
 import 'package:deco_flutter_app/Data/Services/product_api_service.dart';
 import 'package:deco_flutter_app/Model/brand_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -29,6 +30,14 @@ class CategoryItemScreen extends GetView<BottomNavController> {
           backgroundColor: Colors.white,
           elevation: 0.2,
           surfaceTintColor: Colors.transparent,
+          systemOverlayStyle: const SystemUiOverlayStyle(
+            statusBarColor: AppColors.color42B,
+            statusBarIconBrightness: Brightness.light,
+            statusBarBrightness: Brightness.dark,
+            systemNavigationBarColor: AppColors.color42B,
+            systemNavigationBarIconBrightness: Brightness.light,
+            systemNavigationBarDividerColor: AppColors.whiteColor,
+          ),
           shadowColor: Colors.black.withOpacity(0.4),
           flexibleSpace: Container(
             decoration: BoxDecoration(
@@ -44,12 +53,16 @@ class CategoryItemScreen extends GetView<BottomNavController> {
               ],
             ),
           ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios),
-            onPressed: () {
-              Get.back();
-            },
+          leading: Padding(
+            padding: EdgeInsets.only(left: Get.width * 0.03),
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back_ios),
+              onPressed: () {
+                Get.back();
+              },
+            ),
           ),
+          leadingWidth: Get.width * 0.1,
           actions: [
             Stack(
               children: [
@@ -164,6 +177,9 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                         itemCount:
                             controller.subCategoryModel.value.data!.length,
                         itemBuilder: (BuildContext context, int index) {
+                          print(
+                            "${ApiConstants.imageBaseUrl}${controller.subCategoryModel.value.data?[index].productSubCategoryImage ?? ""}",
+                          );
                           return subCategoryItem(
                             isLoading: false.obs,
                             //controller.isLoadingTrue,
@@ -235,6 +251,7 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                                   controller.productItemList.isNotEmpty) {
                                 // Dismiss the loading dialog
                                 Get.back();
+                                controller.qty.value = 1;
 
                                 // Show the dialog if all lists have data
                                 _showDialog(context, index);
@@ -293,6 +310,7 @@ class CategoryItemScreen extends GetView<BottomNavController> {
       String? title,
       required RxBool isLoading,
       void Function()? onTap}) {
+    print(image);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -318,8 +336,8 @@ class CategoryItemScreen extends GetView<BottomNavController> {
             height: AppSize.displayHeight(context) * 0.12,
             child: CommonNetworkImage(
               imageUrl: image ?? "",
-              placeholder: 'assets/images/loading_placeholder.png',
-              errorPlaceholder: 'assets/images/error_image.png',
+              placeholder: 'assets/place_holder.png',
+              errorPlaceholder: 'assets/place_holder.png',
               fit: BoxFit.cover,
               fadeInDuration: const Duration(
                   milliseconds: 500), // Optional: Adjust fade duration
@@ -335,6 +353,7 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                 child: Text(
                   title ?? "Testing one1",
                   overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
                   style: GoogleFonts.ptSans(
                       fontSize: Get.height * 0.018,
                       fontWeight: FontWeight.w700,
@@ -464,6 +483,14 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                               label: "Brand",
                               selectedValue: controller.selectedBrand,
                               onChanged: (p0) async {
+                                print(controller
+                                    .selectedBrand.value?.productsBrand);
+                                controller.selectedThick.value =
+                                    ThicknessData();
+                                controller.selectedSize.value = SizeData();
+                                controller.thicknessList.clear();
+                                controller.sizeList.clear();
+                                controller.productItemList.clear();
                                 controller.thicknessList.value =
                                     await ProductApiService()
                                         .fetchThicknessApiUrl(
@@ -476,70 +503,9 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                                           ?.toString() ??
                                       "",
                                   brand: controller
-                                          .selectedBrand.value.productsBrand ??
+                                          .selectedBrand.value?.productsBrand ??
                                       "",
                                 );
-                                controller.sizeList.value =
-                                    await ProductApiService().fetchSizeApiUrl(
-                                  loading: controller.isLoadingThick,
-                                  id: controller.categoryData.value.id
-                                          ?.toString() ??
-                                      "",
-                                  subId: controller.subCategoryModel.value
-                                          .data?[index].id
-                                          ?.toString() ??
-                                      "",
-                                  brand: controller
-                                          .selectedBrand.value.productsBrand ??
-                                      "",
-                                  thickness: controller.selectedThick.value
-                                          .productsThickness ??
-                                      '',
-                                  unit: controller
-                                          .selectedThick.value.productsUnit ??
-                                      '',
-                                );
-
-                                controller.productItemList.value =
-                                    await ProductApiService()
-                                        .fetchProductApiUrl(
-                                  loading: controller.isLoadingThick,
-                                  id: controller.categoryData.value.id
-                                          ?.toString() ??
-                                      "",
-                                  subId: controller.subCategoryModel.value
-                                          .data?[index].id
-                                          ?.toString() ??
-                                      "",
-                                  brand: controller
-                                          .selectedBrand.value.productsBrand ??
-                                      "",
-                                  thickness: controller.selectedThick.value
-                                          .productsThickness ??
-                                      '',
-                                  unit: controller
-                                          .selectedThick.value.productsUnit ??
-                                      '',
-                                  size1: controller
-                                          .selectedSize.value.productsSize1
-                                          .toString() ??
-                                      '',
-                                  size2: controller
-                                          .selectedSize.value.productsSize2
-                                          .toString() ??
-                                      '',
-                                  sizeUnit: controller
-                                      .selectedSize.value.productsSizeUnit
-                                      .toString(),
-                                );
-
-                                if (controller.productItemList.isEmpty) {
-                                  customToast(
-                                      context,
-                                      'No Product found for add to cart',
-                                      ToastType.warning);
-                                  return;
-                                }
                               },
                               items: controller.brandList
                                   .toSet()
@@ -561,6 +527,10 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                                     label: "Thickness",
                                     selectedValue: controller.selectedThick,
                                     onChanged: (p0) async {
+                                      controller.selectedSize.value =
+                                          SizeData();
+                                      controller.sizeList.clear();
+                                      controller.productItemList.clear();
                                       controller.sizeList.value =
                                           await ProductApiService()
                                               .fetchSizeApiUrl(
@@ -573,54 +543,15 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                                                 ?.toString() ??
                                             "",
                                         brand: controller.selectedBrand.value
-                                                .productsBrand ??
+                                                ?.productsBrand ??
                                             "",
                                         thickness: controller.selectedThick
-                                                .value.productsThickness ??
+                                                .value?.productsThickness ??
                                             '',
                                         unit: controller.selectedThick.value
-                                                .productsUnit ??
+                                                ?.productsUnit ??
                                             '',
                                       );
-                                      controller.productItemList.value =
-                                          await ProductApiService()
-                                              .fetchProductApiUrl(
-                                        loading: controller.isLoadingThick,
-                                        id: controller.categoryData.value.id
-                                                ?.toString() ??
-                                            "",
-                                        subId: controller.subCategoryModel.value
-                                                .data?[index].id
-                                                ?.toString() ??
-                                            "",
-                                        brand: controller.selectedBrand.value
-                                                .productsBrand ??
-                                            "",
-                                        thickness: controller.selectedThick
-                                                .value.productsThickness ??
-                                            '',
-                                        unit: controller.selectedThick.value
-                                                .productsUnit ??
-                                            '',
-                                        size1: controller.selectedSize.value
-                                                .productsSize1
-                                                .toString() ??
-                                            '',
-                                        size2: controller.selectedSize.value
-                                                .productsSize2
-                                                .toString() ??
-                                            '',
-                                        sizeUnit: controller
-                                            .selectedSize.value.productsSizeUnit
-                                            .toString(),
-                                      );
-                                      if (controller.productItemList.isEmpty) {
-                                        customToast(
-                                            context,
-                                            'No Product found for add to cart',
-                                            ToastType.warning);
-                                        return;
-                                      }
                                     },
                                     items: controller.thicknessList
                                         .toSet()
@@ -656,28 +587,36 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                                                 ?.toString() ??
                                             "",
                                         brand: controller.selectedBrand.value
-                                                .productsBrand ??
+                                                ?.productsBrand ??
                                             "",
                                         thickness: controller.selectedThick
-                                                .value.productsThickness ??
+                                                .value?.productsThickness ??
                                             '',
                                         unit: controller.selectedThick.value
-                                                .productsUnit ??
+                                                ?.productsUnit ??
                                             '',
                                         size1: controller.selectedSize.value
-                                                .productsSize1
+                                                ?.productsSize1
                                                 .toString() ??
                                             '',
                                         size2: controller.selectedSize.value
-                                                .productsSize2
+                                                ?.productsSize2
                                                 .toString() ??
                                             '',
-                                        sizeUnit: controller
-                                            .selectedSize.value.productsSizeUnit
-                                            .toString(),
+                                        sizeUnit: controller.selectedSize.value
+                                                ?.productsSizeUnit
+                                                .toString() ??
+                                            "",
                                       );
 
                                       if (controller.productItemList.isEmpty) {
+                                        controller.selectedThick.value =
+                                            ThicknessData();
+                                        controller.selectedSize.value =
+                                            SizeData();
+                                        controller.thicknessList.clear();
+                                        controller.sizeList.clear();
+                                        controller.productItemList.clear();
                                         customToast(
                                             context,
                                             'No Product found for add to cart',
@@ -704,7 +643,6 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                             QuantityPicker(
                               initialQuantity: controller.qty.value,
                               minQuantity: 1,
-                              maxQuantity: 10,
                               labelText: "Quantity",
                               onQuantityChanged: (quantity) {
                                 controller.qty.value = quantity;
@@ -713,6 +651,23 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                             ),
                             SizedBox(
                                 height: AppSize.displayHeight(context) * 0.025),
+                            /* if (controller.productItemList.isEmpty)
+                            Row(
+                              children: [
+                              Text(
+                                "No Product found for add to cart",
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.ptSans(
+                                  fontSize: Get.height / 65,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors
+                                      .mainColor, // Change text color when selected
+                                ),
+                              ),
+                            ],
+                            ),*/
+
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -815,45 +770,47 @@ class CategoryItemScreen extends GetView<BottomNavController> {
     BuildContext context, {
     required String label,
     void Function(T?)? onChanged,
-    required RxList<DropdownMenuItem<T>>
-        items, // Generic type for dropdown items
-    required Rx<T> selectedValue, // Reactive selected value of type T
-    String hintText = "Select an option", // Default hint text
+    required RxList<DropdownMenuItem<T>> items,
+    required Rxn<T> selectedValue, // Allow null
+    String hintText = "Select an option",
   }) {
-    // Ensure selectedValue exists in the list
-    bool valueExists = items.any((item) => item.value == selectedValue.value);
-
-    // If the selected value doesn't exist in the list, set a default value (like null or the first item)
-    if (!valueExists) {
-      selectedValue.value = (items.isNotEmpty ? items.first.value : null as T)
-          as T; // Set default or null
+    // Filter out duplicates based on value
+    final uniqueItems = <T, DropdownMenuItem<T>>{};
+    for (var item in items) {
+      if (item.value != null) {
+        uniqueItems[item.value as T] = item;
+      }
     }
 
-    // Remove duplicates by converting the list to a set, then back to a list
-    var uniqueItems = items.toSet().toList();
+    final finalItems = uniqueItems.values.toList();
+
+    // Ensure the selected value matches exactly one item or is null
+    final matchedItems =
+        finalItems.where((item) => item.value == selectedValue.value).toList();
+    if (matchedItems.length != 1) {
+      selectedValue.value = null; // Reset if value is invalid
+    }
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start, // Align label and dropdown
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
           style: GoogleFonts.ptSans(
-              fontSize: AppSize.displayHeight(context) * 0.017,
-              fontWeight: FontWeight.w700,
-              color: AppColors.colorB5B),
-          // Customize the label style
+            fontSize: AppSize.displayHeight(context) * 0.017,
+            fontWeight: FontWeight.w700,
+            color: AppColors.colorB5B,
+          ),
         ),
-        const SizedBox(height: 8), // Spacing between label and dropdown
+        const SizedBox(height: 8),
         Obx(
           () => CommonDropdownField<T>(
-            items: uniqueItems, // Pass unique items to avoid duplicates
-            value: selectedValue.value, // Bind the selected value
-            hintText: hintText, // Pass the hint text
+            items: finalItems,
+            value: selectedValue.value,
+            hintText: hintText,
             onChanged: (T? value) {
+              selectedValue.value = value;
               if (onChanged != null) onChanged(value);
-              if (value != null) {
-                selectedValue.value = value; // Update the reactive value
-              }
             },
           ),
         ),

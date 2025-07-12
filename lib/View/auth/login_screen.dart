@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:deco_flutter_app/Data/Services/api_service.dart';
 import 'package:deco_flutter_app/Util/custom/custom_toast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,6 +14,7 @@ import '../../Controller/otp_controller.dart';
 import '../../RoutesManagment/routes.dart';
 import '../../Util/Constant/app_colors.dart';
 import '../../Util/Constant/app_size.dart';
+import '../../Util/custom/network_connectivity.dart';
 import '../../widget/common_button.dart';
 import '../../widget/radio_button.dart';
 import '../../widget/text_form_field_widget.dart';
@@ -92,8 +96,12 @@ class LoginScreen extends GetView<LoginController> {
                       return null;
                     },
                     maxLength: 10,
+                    counterText: "",
                     onChanged: (p0) {
                       controller.isAbleFun();
+                      if (p0.isNotEmpty && p0.length == 10) {
+                        FocusScope.of(context).unfocus();
+                      }
                     },
                     prefixIcon: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -119,7 +127,7 @@ class LoginScreen extends GetView<LoginController> {
                       controller.isAccepted.value = value;
                       controller.isAbleFun();
                     },
-                    label: 'I accept the terms and condition',
+                    label: 'I accept the Terms and Conditions',
                     onTermsTap: () async {
                       webcontroller
                         ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -130,10 +138,11 @@ class LoginScreen extends GetView<LoginController> {
                         context: context,
                         builder: (context) {
                           return AlertDialog(
-                            backgroundColor: Colors.white,
-                            surfaceTintColor: Colors.white,
+                            insetPadding: EdgeInsets.symmetric(
+                                horizontal: Get.width * 0.025),
+                            // 95% width
                             titlePadding:
-                                EdgeInsets.only(top: 10, right: 10, bottom: 0),
+                                EdgeInsets.only(top: 10, right: 10, bottom: 10),
                             title: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
@@ -142,27 +151,31 @@ class LoginScreen extends GetView<LoginController> {
                                     Navigator.pop(context);
                                   },
                                   child: Container(
-                                      padding: EdgeInsets.all(3),
-                                      decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: AppColors.textBlack
-                                              .withOpacity(0.2)
-                                              .withOpacity(0.5)),
-                                      child: Icon(
-                                        Icons.close,
-                                        color: AppColors.textBlack,
-                                      )),
+                                    padding: EdgeInsets.all(3),
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: AppColors.textBlack
+                                            .withOpacity(0.1)),
+                                    child: Icon(
+                                      Icons.close,
+                                      color: AppColors.textBlack,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
                             contentPadding: EdgeInsets.all(0),
                             content: Container(
-                              width: 430, // Adjust the width here
+                              width: Get.width * 0.9,
+                              // Adjust the width here
+                              height: Get.height * 0.9,
+                              // Optional: control height
                               child: WebViewWidget(controller: webcontroller),
                             ),
                           );
                         },
                       );
+
                       // Get.to(TermsAndConditionPage(url: ConstantString.loginTermsUrl,),);
                     },
                     onPrivacyPolicyTap: () async {
@@ -210,6 +223,14 @@ class LoginScreen extends GetView<LoginController> {
                       );
                       // Get.to(TermsAndConditionPage(url: ConstantString.loginTermsUrl,),);
                     },
+                    onIAccept: () {
+                      if (controller.isAccepted.value) {
+                        controller.isAccepted.value = false;
+                      } else {
+                        controller.isAccepted.value = true;
+                      }
+                      controller.isAbleFun();
+                    },
                   ),
                   SizedBox(
                     height: Get.height / 15,
@@ -222,13 +243,35 @@ class LoginScreen extends GetView<LoginController> {
                         () => CommonButton(
                           width: AppSize.displayWidth(context) * 0.5,
                           text: 'Get the code',
-                          isEnabled: controller.isAble.value,
+                          isEnabled: /*controller.isAble.value*/ true,
                           isLoading: controller.isLoading.value,
                           onPressed: () async {
                             FocusScope.of(context).unfocus();
                             if (controller.loginStoreFormKey.currentState!
                                 .validate()) {
                               try {
+                                // Check if Terms & Conditions are accepted
+                                if (!controller.isAccepted.value) {
+                                  Get.snackbar(
+                                    "Terms & Conditions",
+                                    'Please agree to terms & conditions',
+                                    snackPosition: SnackPosition
+                                        .BOTTOM, // Position: TOP or BOTTOM
+                                  );
+                                  return;
+                                }
+
+                                if (!(await NetworkConnectivity
+                                    .checkInternet())) {
+                                  Get.snackbar(
+                                    "No Internet",
+                                    'Please check your internet connection',
+                                    snackPosition: SnackPosition
+                                        .BOTTOM, // Position: TOP or BOTTOM
+                                  );
+                                  return;
+                                }
+
                                 controller.isLoading.value = true;
 
                                 // Call your API
@@ -240,6 +283,10 @@ class LoginScreen extends GetView<LoginController> {
                                 );
 
                                 if (value['code'] == 200) {
+                                  controller.loginPassword.value =
+                                      value["data"]['cpassword'] ?? "";
+                                  print(
+                                      "login password::::::::::: ${controller.loginPassword.value}");
                                   //Get.offAllNamed(RouteConstants.otpScreen,
                                   //    arguments: {
                                   //      "no": controller
@@ -250,6 +297,25 @@ class LoginScreen extends GetView<LoginController> {
                                     appVerificationDisabledForTesting:
                                         false, // Ensure this is false for production
                                   );
+                                  var token;
+                                  if (Platform.isIOS) {
+                                    token = await FirebaseMessaging.instance
+                                        .getAPNSToken();
+                                    debugPrint('APNS Token: $token');
+                                  } else {
+                                    var token;
+                                    if (Platform.isIOS) {
+                                      token = await FirebaseMessaging.instance
+                                          .getAPNSToken();
+                                      debugPrint('APNS Token: $token');
+                                    } else {
+                                      FirebaseMessaging messaging =
+                                          FirebaseMessaging.instance;
+                                      token = await messaging.getToken();
+                                      debugPrint('APNS Token: $token');
+                                    }
+                                    debugPrint('APNS Token: $token');
+                                  }
                                   await FirebaseAuth.instance.verifyPhoneNumber(
                                     phoneNumber:
                                         "+91${controller.numberController.value.text.trim()}",
@@ -308,6 +374,10 @@ class LoginScreen extends GetView<LoginController> {
                                           arguments: {
                                             "no": controller
                                                 .numberController.value.text,
+                                            "password": value["data"]
+                                                    ['cpassword'] ??
+                                                "",
+                                            "deviceId": token
                                           });
                                     },
                                     codeAutoRetrievalTimeout:
@@ -359,7 +429,7 @@ class LoginScreen extends GetView<LoginController> {
                       ),
                       InkWell(
                         onTap: () {
-                          Get.offAllNamed(RouteConstants.editProfileScreen);
+                          Get.toNamed(RouteConstants.editProfileScreen);
                         },
                         child: Text(
                           " Sign up",

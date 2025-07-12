@@ -8,7 +8,7 @@ import '../Util/Constant/app_size.dart';
 class QuantityPicker extends StatefulWidget {
   final int initialQuantity;
   final int minQuantity;
-  final int maxQuantity;
+  final int? maxQuantity;
   final String? labelText;
   final void Function(int)? onQuantityChanged;
 
@@ -16,7 +16,7 @@ class QuantityPicker extends StatefulWidget {
     super.key,
     this.initialQuantity = 1,
     this.minQuantity = 1,
-    this.maxQuantity = 99,
+    this.maxQuantity,
     this.labelText,
     this.onQuantityChanged,
   });
@@ -27,17 +27,20 @@ class QuantityPicker extends StatefulWidget {
 
 class QuantityPickerState extends State<QuantityPicker> {
   late int _currentQuantity;
+  final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _currentQuantity = widget.initialQuantity;
+    _controller.text = '$_currentQuantity';
   }
 
   void _incrementQuantity() {
-    if (_currentQuantity < widget.maxQuantity) {
+    if (widget.maxQuantity == null || _currentQuantity < widget.maxQuantity!) {
       setState(() {
         _currentQuantity++;
+        _controller.text = '$_currentQuantity';
       });
       widget.onQuantityChanged?.call(_currentQuantity);
     }
@@ -47,8 +50,30 @@ class QuantityPickerState extends State<QuantityPicker> {
     if (_currentQuantity > widget.minQuantity) {
       setState(() {
         _currentQuantity--;
+        _controller.text = '$_currentQuantity';
       });
       widget.onQuantityChanged?.call(_currentQuantity);
+    }
+  }
+
+  void _onManualEntry(String value) {
+    final int? enteredValue = int.tryParse(value);
+    if (enteredValue != null) {
+      int validatedValue =
+          enteredValue < widget.minQuantity ? widget.minQuantity : enteredValue;
+
+      if (widget.maxQuantity != null && validatedValue > widget.maxQuantity!) {
+        validatedValue = widget.maxQuantity!;
+      }
+
+      setState(() {
+        _currentQuantity = validatedValue;
+        _controller.text = '$_currentQuantity';
+      });
+      widget.onQuantityChanged?.call(_currentQuantity);
+    } else {
+      // Reset to valid quantity on invalid input
+      _controller.text = '$_currentQuantity';
     }
   }
 
@@ -63,19 +88,17 @@ class QuantityPickerState extends State<QuantityPicker> {
             child: Text(
               widget.labelText!,
               style: GoogleFonts.ptSans(
-                  fontSize: AppSize.displayHeight(context) * 0.017,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.colorB5B),
+                fontSize: AppSize.displayHeight(context) * 0.017,
+                fontWeight: FontWeight.w700,
+                color: AppColors.colorB5B,
+              ),
             ),
           ),
         Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: defaultPadding,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
           decoration: BoxDecoration(
             color: AppColors.color2F2,
-            borderRadius:
-                BorderRadius.circular(defaultRadius * 1), // Matches Dropdown
+            borderRadius: BorderRadius.circular(defaultRadius * 1),
             border: Border.all(color: AppColors.colorDDD),
           ),
           child: Row(
@@ -83,26 +106,37 @@ class QuantityPickerState extends State<QuantityPicker> {
               IconButton(
                 icon: Icon(
                   Icons.remove,
-                  color: AppColors.colorCBC,
+                  color: AppColors.color42B,
                   size: AppSize.displayHeight(context) * 0.02,
                 ),
                 onPressed: _decrementQuantity,
               ),
               Expanded(
-                child: Text(
-                  '$_currentQuantity',
+                child: TextField(
+                  controller: _controller,
                   textAlign: TextAlign.center,
+                  keyboardType: TextInputType.number,
                   style: GoogleFonts.ptSans(
                     fontSize: Get.height / 55,
                     fontWeight: FontWeight.w500,
                     color: AppColors.color333,
                   ),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  onSubmitted: _onManualEntry,
+                  onChanged: (value) {
+                    if (value.isEmpty) return;
+                    _onManualEntry(value);
+                  },
                 ),
               ),
               IconButton(
                 icon: Icon(
                   Icons.add,
-                  color: AppColors.colorCBC,
+                  color: AppColors.color42B,
                   size: AppSize.displayHeight(context) * 0.02,
                 ),
                 onPressed: _incrementQuantity,

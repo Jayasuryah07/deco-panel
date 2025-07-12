@@ -13,6 +13,7 @@ import '../../Model/cart_model.dart';
 import '../../Model/quotation_model.dart';
 import '../../Model/user_model.dart';
 import '../../Util/custom/custom_toast.dart';
+import '../../Util/custom/network_connectivity.dart';
 import '../Providers/api_constants.dart';
 import 'api_service.dart';
 
@@ -28,6 +29,11 @@ class OrderApiService {
   }) async {
     List<OrderItemData> orderList = [];
     try {
+      if (!await isConnected()) {
+        //customToast(context, "No internet connection", ToastType.error);
+        loading.value = false;
+        return [];
+      }
       loading.value = true;
 
       var url = (userType == 1)
@@ -71,6 +77,11 @@ class OrderApiService {
     List<CartItem> cartList = [];
     try {
       loading.value = true;
+      if (!await isConnected()) {
+        //customToast(context, "No internet connection", ToastType.error);
+        loading.value = false;
+        return [];
+      }
       var url = Uri.parse(ApiConstants.fetchCartApiUrl);
       debugPrint(url.toString());
       var response = await http.post(
@@ -111,6 +122,11 @@ class OrderApiService {
   }) async {
     OrderItemDataModel orderItemDataModel = OrderItemDataModel();
     try {
+      if (!await isConnected()) {
+        //customToast(context, "No internet connection", ToastType.error);
+        loading.value = false;
+        return OrderItemDataModel();
+      }
       loading.value = true;
       var url = Uri.parse(ApiConstants.createOrderByIdApiUrl);
       debugPrint(url.toString());
@@ -145,7 +161,11 @@ class OrderApiService {
     required String orderref,
   }) async {
     QuotationModel quotationModel = QuotationModel();
-
+    if (!await isConnected()) {
+      //customToast(context, "No internet connection", ToastType.error);
+      loading.value = false;
+      return QuotationModel();
+    }
     loading.value = true;
     var url = Uri.parse(ApiConstants.getQuotationApiUrl);
     debugPrint(url.toString());
@@ -179,6 +199,11 @@ class OrderApiService {
   }) async {
     try {
       loading.value = true;
+      if (!await isConnected()) {
+        //customToast(context, "No internet connection", ToastType.error);
+        loading.value = false;
+        return false;
+      }
       var url = Uri.parse(ApiConstants.deleteCartApiUrl);
       debugPrint(url.toString());
       var response = await http.post(url, headers: {
@@ -224,6 +249,11 @@ class OrderApiService {
   }) async {
     try {
       loading.value = true;
+      if (!await isConnected()) {
+        //customToast(context, "No internet connection", ToastType.error);
+        loading.value = false;
+        return false;
+      }
       var url = Uri.parse(ApiConstants.createOrderApiUrl);
       debugPrint(url.toString());
       var response = await http.post(url, headers: {
@@ -269,6 +299,11 @@ class OrderApiService {
   }) async {
     try {
       loading.value = true;
+      if (!await isConnected()) {
+        //customToast(context, "No internet connection", ToastType.error);
+        loading.value = false;
+        return false;
+      }
       var url = Uri.parse(ApiConstants.updateCartApiUrl);
       debugPrint(url.toString());
       var response = await http.post(url, headers: {
@@ -319,6 +354,11 @@ class OrderApiService {
     required bool isDone,
   }) async {
     loading.value = true;
+    if (!await isConnected()) {
+      //customToast(context, "No internet connection", ToastType.error);
+      loading.value = false;
+      return false;
+    }
     var url = Uri.parse(ApiConstants.updateQuotationApiUrl);
     debugPrint(url.toString());
     var body = {
@@ -389,12 +429,16 @@ class OrderApiService {
     required String orderId,
   }) async {
     loading.value = true;
+    if (!await isConnected()) {
+      //customToast(context, "No internet connection", ToastType.error);
+      loading.value = false;
+      return false;
+    }
     var url = Uri.parse(ApiConstants.createQuotationApiUrl);
     debugPrint(url.toString());
     var body = {
       "order_id": orderId,
     };
-
     debugPrint(body.toString());
     try {
       var response = await http.post(

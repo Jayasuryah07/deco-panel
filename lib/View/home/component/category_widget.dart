@@ -42,14 +42,14 @@ class CategoryItemWidget extends StatelessWidget {
                 ? width! * 1.2
                 : width ?? AppSize.displayWidth(context) * 0.27,
             alignment: Alignment.center,
-            padding: const EdgeInsets.all(defaultPadding / 4),
+            //padding: const EdgeInsets.all(defaultPadding / 4),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: AppColors.whiteColor,
               border: Border.all(
                 color: isSelected ? AppColors.colorF45 : AppColors.buttonColor,
                 // Change border color when selected
-                width: isSelected ? 3 : 1, // Thicker border for selected state
+                width: isSelected ? 2 : 1, // Thicker border for selected state
               ),
               boxShadow: [
                 BoxShadow(
@@ -73,24 +73,31 @@ class CategoryItemWidget extends StatelessWidget {
               ),
               child: CommonNetworkImage(
                 imageUrl: networkImage ?? "",
-                placeholder: 'assets/images/loading_placeholder.png',
-                errorPlaceholder: 'assets/images/error_image.png',
+                placeholder: 'assets/place_holder.png',
+                errorPlaceholder: 'assets/place_holder.png',
                 fit: BoxFit.fill,
                 fadeInDuration: const Duration(milliseconds: 500),
               ),
             ),
           ),
         ).paddingOnly(bottom: AppSize.displayWidth(context) * 0.02),
-        Text(
-          title ?? "",
-          overflow: TextOverflow.ellipsis,
-          style: GoogleFonts.ptSans(
-            fontSize: Get.height / 65,
-            fontWeight: FontWeight.w700,
-            color: isSelected
-                ? AppColors.colorF45
-                : AppColors.color333, // Change text color when selected
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                title ?? "",
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.ptSans(
+                  fontSize: Get.height / 65,
+                  fontWeight: FontWeight.w700,
+                  color: isSelected
+                      ? AppColors.colorF45
+                      : AppColors.color333, // Change text color when selected
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );

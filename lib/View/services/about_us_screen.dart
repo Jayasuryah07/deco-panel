@@ -2,8 +2,10 @@ import 'package:deco_flutter_app/Controller/feedback_controller.dart';
 import 'package:deco_flutter_app/Util/Constant/app_images.dart';
 import 'package:deco_flutter_app/Util/Constant/app_size.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../Util/Constant/app_colors.dart';
 
@@ -18,6 +20,14 @@ class AboutUsScreen extends GetView<FeedbackController> {
         elevation: 0.2,
         surfaceTintColor: Colors.transparent,
         shadowColor: Colors.black.withOpacity(0.4),
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: AppColors.color42B,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+          systemNavigationBarColor: AppColors.color42B,
+          systemNavigationBarIconBrightness: Brightness.light,
+          systemNavigationBarDividerColor: AppColors.whiteColor,
+        ),
         flexibleSpace: Container(
             decoration: BoxDecoration(
           color: Colors.white,
@@ -29,12 +39,16 @@ class AboutUsScreen extends GetView<FeedbackController> {
             ),
           ],
         )),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            Get.back();
-          },
+        leading: Padding(
+          padding: EdgeInsets.only(left: Get.width * 0.03),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              Get.back();
+            },
+          ),
         ),
+        leadingWidth: Get.width * 0.1,
         title: Text(
           "About Us",
           style: GoogleFonts.roboto(
@@ -91,7 +105,7 @@ class AboutUsScreen extends GetView<FeedbackController> {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            Text(
+            /* Text(
               "Tag line here",
               textAlign: TextAlign.start,
               style: GoogleFonts.roboto(
@@ -99,33 +113,45 @@ class AboutUsScreen extends GetView<FeedbackController> {
                 fontSize: Get.height / 60,
                 fontWeight: FontWeight.w400,
               ),
-            ),
+            ),*/
             SizedBox(
               height: AppSize.displayHeight(context) * 0.02,
             ),
             commonAboutUsWidget(
-              title: "8867171060",
+              title: "+91 88671 71060",
               imageIconData: Icons.call_rounded,
               isIcon: true,
               context: context,
+              onTap: () {
+                _launchURL("tel:+91 88671 71060");
+              },
             ),
             commonAboutUsWidget(
               title: "info@decopanel.in",
               imageIconData: Icons.email_outlined,
               isIcon: true,
               context: context,
+              onTap: () {
+                _launchURL("mailto:info@decopanel.in");
+              },
             ),
             commonAboutUsWidget(
-              title: "www.decopanel.com",
+              title: "www.decopanel.in",
               imageIconData: Icons.public,
               isIcon: true,
               context: context,
+              onTap: () {
+                _launchURL("https://decopanel.in/");
+              },
             ),
             commonAboutUsWidget(
-              title: "www.google.com",
-              imageIconData: Icons.location_on_outlined,
+              title: "Our Address",
+              imageIconData: Icons.location_on,
               isIcon: true,
               context: context,
+              onTap: () {
+                _launchURL("https://maps.app.goo.gl/y4hjLRfs3tAKkgD89");
+              },
             ),
           ],
         ),
@@ -136,47 +162,50 @@ class AboutUsScreen extends GetView<FeedbackController> {
   Widget commonAboutUsWidget(
       {bool isIcon = false,
       String? title,
+      void Function()? onTap,
       dynamic imageIconData,
       BuildContext? context}) {
-    return Padding(
-      padding:
-          EdgeInsets.symmetric(vertical: AppSize.displayHeight(context) * 0.01),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                !isIcon
-                    ? Image.asset(imageIconData)
-                    : Icon(
-                        imageIconData,
-                        color: AppColors.buttonColor,
-                        size: AppSize.displayHeight(context) * 0.045,
-                      ),
-              ],
-            ),
-          ),
-          SizedBox(
-            width: AppSize.displayWidth(context) * 0.04,
-          ),
-          Expanded(
-            flex: 4,
-            child: Text(
-              title ?? "",
-              textAlign: TextAlign.start,
-              style: GoogleFonts.roboto(
-                color: AppColors.hintColor2,
-                fontSize: Get.height / 50,
-                fontWeight: FontWeight.w500,
+    return InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+              vertical: AppSize.displayHeight(context) * 0.01),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                flex: 2,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    !isIcon
+                        ? Image.asset(imageIconData)
+                        : Icon(
+                            imageIconData,
+                            color: AppColors.buttonColor,
+                            size: AppSize.displayHeight(context) * 0.045,
+                          ),
+                  ],
+                ),
               ),
-            ),
+              SizedBox(
+                width: AppSize.displayWidth(context) * 0.04,
+              ),
+              Expanded(
+                flex: 4,
+                child: Text(
+                  title ?? "",
+                  textAlign: TextAlign.start,
+                  style: GoogleFonts.roboto(
+                    color: AppColors.hintColor2,
+                    fontSize: Get.height / 50,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        ));
   }
 }
 
@@ -220,4 +249,11 @@ class PeanutClipper extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
+void _launchURL(String url) async {
+  final Uri uri = Uri.parse(url);
+  if (!await launchUrl(uri)) {
+    throw 'Could not launch $url';
+  }
 }

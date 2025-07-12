@@ -1,14 +1,21 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:in_app_update/in_app_update.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Data/Providers/session_manager.dart';
 import '../Data/Services/api_service.dart';
 import '../RoutesManagment/routes.dart';
+import '../Util/Constant/app_colors.dart';
+import '../Util/Constant/app_size.dart';
+import '../Util/custom/network_connectivity.dart';
+import '../Util/custom/network_connectivity_class.dart';
+import '../widget/common_button.dart';
 import 'auth/login_screen.dart';
 
 class SplashCommonPage extends StatefulWidget {
@@ -57,10 +64,15 @@ class _SplashCommonPageState extends State<SplashCommonPage> {
   }
 
   Future<void> getUserData(BuildContext context) async {
+    if (!(await NetworkConnectivity.checkInternet())) {
+      //  networkDialog(context);
+      Get.to(const NoInternetScreen());
+      return;
+    }
     await ApiService().getdata();
     token = (await SessionManager().getAuthToken()) ?? "";
 
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 1));
 
     if (token.isEmpty) {
       Get.offAllNamed(RouteConstants.loginScreen);
@@ -68,12 +80,29 @@ class _SplashCommonPageState extends State<SplashCommonPage> {
     }
 
     if (token.isNotEmpty && userDetails.data != null) {
+      var firebaseToken;
+      if (Platform.isIOS) {
+        firebaseToken = await FirebaseMessaging.instance.getAPNSToken();
+        debugPrint('APNS Token: $token');
+      } else {
+        FirebaseMessaging messaging = FirebaseMessaging.instance;
+        firebaseToken = await messaging.getToken();
+        debugPrint('APNS Token: $token');
+      }
       await ApiService().loginApi(
         phone: userDetails.data?.user?.mobile ?? "",
         context: context,
         loading: otpController.isLoading,
         password: userDetails.data?.user?.cpassword ?? "",
+        deviceId: firebaseToken ?? "",
       );
+      final SharedPreferences preferences =
+          await SharedPreferences.getInstance();
+      var getType = preferences.getString("userType");
+
+      userType = int.parse(getType ?? "1");
+
+      await ApiService().getdata();
     } else {
       Get.offAllNamed(RouteConstants.loginScreen);
       return;
@@ -138,8 +167,73 @@ class _SplashCommonPageState extends State<SplashCommonPage> {
           SizedBox(
             height: Get.height * 0.15,
           ),
+          //  CircularProgressIndicator(color: ,),
         ],
       ),
     );
   }
+}
+
+void networkDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        title: Text(
+          "Log Out",
+          style: GoogleFonts.ptSans(
+            fontSize: Get.height / 45,
+            fontWeight: FontWeight.w700,
+            color: AppColors.color333,
+          ),
+        ),
+        content: Text(
+          "Are you sure you want to log out?",
+          style: GoogleFonts.ptSans(
+            fontSize: Get.height / 55,
+            fontWeight: FontWeight.w400,
+            color: AppColors.color333,
+          ),
+        ),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: CommonButton(
+                  padding: EdgeInsets.zero,
+                  height: AppSize.displayHeight(context) * 0.05,
+                  boxShadowColor: Colors.transparent,
+                  enabledColor: AppColors.whiteColor,
+                  textStyle: GoogleFonts.poppins(
+                    fontSize: Get.height / 65,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.colorB5B,
+                  ),
+                  text: "Cancel",
+                  onPressed: () {
+                    Get.back();
+                  },
+                ),
+              ),
+              Expanded(
+                child: CommonButton(
+                  text: "Log Out",
+                  padding: EdgeInsets.zero,
+                  height: AppSize.displayHeight(context) * 0.05,
+                  onPressed: () async {
+                    final SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    prefs.clear();
+                    Get.offAllNamed(RouteConstants.loginScreen);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    },
+  );
 }

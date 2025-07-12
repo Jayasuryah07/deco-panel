@@ -1,12 +1,18 @@
 import 'dart:async';
+import 'dart:io';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:in_app_update/in_app_update.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../Data/Providers/session_manager.dart';
 import '../Data/Services/api_service.dart';
-import '../Model/user_model.dart';
 import '../RoutesManagment/routes.dart';
 import '../Util/Constant/app_images.dart';
+import '../Util/custom/network_connectivity.dart';
+import '../Util/custom/network_connectivity_class.dart';
 import 'auth/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -30,10 +36,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> checkForUpdate() async {
     try {
-      _updateInfo = await InAppUpdate.checkForUpdate();
-      if (_updateInfo?.updateAvailability ==
-          UpdateAvailability.updateAvailable) {
-        startFlexibleUpdate();
+      if (Platform.isAndroid) {
+        _updateInfo = await InAppUpdate.checkForUpdate();
+        if (_updateInfo?.updateAvailability ==
+            UpdateAvailability.updateAvailable) {
+          startFlexibleUpdate();
+        }
       }
     } catch (e) {
       print("Error checking for updates: $e");
@@ -52,27 +60,49 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> getUserData(BuildContext context) async {
-    UserModel userDetails = UserModel();
+    if (!(await NetworkConnectivity.checkInternet())) {
+      //  networkDialog(context);
+      Get.to(const NoInternetScreen());
+      return;
+    }
+    await ApiService().getdata();
     token = (await SessionManager().getAuthToken()) ?? "";
 
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 1));
 
     if (token.isEmpty) {
       Get.offAllNamed(RouteConstants.loginScreen);
       return;
     }
 
-    // Call API if token exists
-    if (token.isNotEmpty) {
-      await ApiService().getdata();
-    }
+    if (token.isNotEmpty && userDetails.data != null) {
+      var firebaseToken;
+      if (Platform.isIOS) {
+        firebaseToken = await FirebaseMessaging.instance.getAPNSToken();
+        debugPrint('APNS Token: $token');
+      } else {
+        FirebaseMessaging messaging = FirebaseMessaging.instance;
+        firebaseToken = await messaging.getToken();
+        debugPrint('APNS Token: $token');
+      }
+      await ApiService().loginApi(
+        phone: userDetails.data?.user?.mobile ?? "",
+        context: context,
+        loading: otpController.isLoading,
+        password: userDetails.data?.user?.cpassword ?? "",
+        deviceId: firebaseToken ?? "",
+      );
+      final SharedPreferences preferences =
+          await SharedPreferences.getInstance();
+      var getType = preferences.getString("userType");
 
-    await ApiService().loginApi(
-      phone: userDetails.data?.user?.mobile ?? "",
-      context: context,
-      loading: otpController.isLoading,
-      password: userDetails.data?.user?.cpassword ?? "",
-    );
+      userType = int.parse(getType ?? "1");
+
+      await ApiService().getdata();
+    } else {
+      Get.offAllNamed(RouteConstants.loginScreen);
+      return;
+    }
   }
 
   @override

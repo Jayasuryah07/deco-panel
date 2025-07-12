@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../Model/product_model.dart';
 import '../../Model/user_model.dart';
 import '../../Util/custom/custom_toast.dart';
+import '../../Util/custom/network_connectivity.dart';
 import '../Providers/api_constants.dart';
 import 'api_service.dart';
 
@@ -24,6 +25,11 @@ class ProductApiService {
     List<BrandData> brandList = [];
     try {
       loading.value = true;
+      if (!await isConnected()) {
+        //customToast(context, "No internet connection", ToastType.error);
+        loading.value = false;
+        return [];
+      }
       var url = Uri.parse(ApiConstants.fetchBrandsApiUrl);
       debugPrint(url.toString());
       var response = await http.post(url, headers: {
@@ -63,8 +69,18 @@ class ProductApiService {
     try {
       log('$id/ $subId / $brand');
       loading.value = true;
+      if (!await isConnected()) {
+        //customToast(context, "No internet connection", ToastType.error);
+        loading.value = false;
+        return [];
+      }
       var url = Uri.parse(ApiConstants.fetchThicknessApiUrl);
       debugPrint(url.toString());
+      debugPrint({
+        "product_ctg_id": id,
+        "product_sub_ctg_id": subId,
+        "product_brand": brand,
+      }.toString());
       var response = await http.post(url, headers: {
         "Authorization": "Bearer $token", // Correct usage
       }, body: {
@@ -104,8 +120,20 @@ class ProductApiService {
     List<SizeData> sizeList = [];
     try {
       loading.value = true;
+      if (!await isConnected()) {
+        //customToast(context, "No internet connection", ToastType.error);
+        loading.value = false;
+        return [];
+      }
       var url = Uri.parse(ApiConstants.fetchSizeApiUrl);
       debugPrint(url.toString());
+      debugPrint({
+        "product_ctg_id": id,
+        "product_sub_ctg_id": subId,
+        "product_brand": brand,
+        "product_thickness": thickness,
+        "product_unit": unit,
+      }.toString());
       var response = await http.post(url, headers: {
         "Authorization": "Bearer $token", // Correct usage
       }, body: {
@@ -150,8 +178,23 @@ class ProductApiService {
     List<CategoryProductItem> categoryProductItem = [];
     try {
       loading.value = true;
+      if (!await isConnected()) {
+        //customToast(context, "No internet connection", ToastType.error);
+        loading.value = false;
+        return [];
+      }
       var url = Uri.parse(ApiConstants.fetchProductApiUrl);
       debugPrint(url.toString());
+      debugPrint({
+        "product_ctg_id": id,
+        "product_sub_ctg_id": subId,
+        "product_brand": brand,
+        "product_thickness": thickness,
+        "product_unit": unit,
+        "product_size1": size1,
+        "product_size2": size2,
+        "product_size_unit": sizeUnit,
+      }.toString());
       var response = await http.post(url, headers: {
         "Authorization": "Bearer $token", // Correct usage
       }, body: {
@@ -200,6 +243,11 @@ class ProductApiService {
   }) async {
     try {
       loading.value = true;
+      if (!await isConnected()) {
+        //customToast(context, "No internet connection", ToastType.error);
+        loading.value = false;
+        return false;
+      }
       var url = Uri.parse(ApiConstants.createCartApiUrl);
       debugPrint(url.toString());
       var response = await http.post(url, headers: {

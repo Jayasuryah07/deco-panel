@@ -54,8 +54,8 @@ class PastOrderScreen extends GetView<PastOrderController> {
                       height: AppSize.displayHeight(context) * 0.3,
                       decoration: BoxDecoration(
                         color: controller.tapIndex.value == 0
-                            ? Colors.white
-                            : AppColors.color7B7,
+                            ? AppColors.colorC1F
+                            : AppColors.whiteColor,
                         border: Border(
                           top: const BorderSide(color: AppColors.color262),
                           right: const BorderSide(color: AppColors.color262),
@@ -70,8 +70,12 @@ class PastOrderScreen extends GetView<PastOrderController> {
                         "Current Orders",
                         style: GoogleFonts.ptSans(
                           fontSize: Get.height / 55,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.color393,
+                          fontWeight: controller.tapIndex.value != 0
+                              ? FontWeight.w400
+                              : FontWeight.w600,
+                          color: controller.tapIndex.value != 0
+                              ? AppColors.color393
+                              : AppColors.whiteColor,
                         ),
                       ),
                     ),
@@ -84,8 +88,8 @@ class PastOrderScreen extends GetView<PastOrderController> {
                       height: AppSize.displayHeight(context) * 0.3,
                       decoration: BoxDecoration(
                         color: controller.tapIndex.value == 1
-                            ? Colors.white
-                            : AppColors.color7B7,
+                            ? AppColors.colorC1F
+                            : AppColors.whiteColor,
                         border: Border(
                           top: const BorderSide(color: AppColors.color262),
                           right: const BorderSide(color: AppColors.color262),
@@ -100,8 +104,12 @@ class PastOrderScreen extends GetView<PastOrderController> {
                         "Past Orders",
                         style: GoogleFonts.ptSans(
                           fontSize: Get.height / 55,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.color393,
+                          fontWeight: controller.tapIndex.value != 1
+                              ? FontWeight.w400
+                              : FontWeight.w600,
+                          color: controller.tapIndex.value != 1
+                              ? AppColors.color393
+                              : AppColors.whiteColor,
                         ),
                       ),
                     ),
@@ -114,8 +122,10 @@ class PastOrderScreen extends GetView<PastOrderController> {
                 physics: NeverScrollableScrollPhysics(),
                 controller: controller.tabController.value,
                 children: [
-                  orderListView(context),
-                  orderListView(context),
+                  orderListView(context,
+                      "Once you place your order, will appear here..."),
+                  orderListView(context,
+                      "Your first order yet to receive, order now and see your order history here after delivery."),
                 ],
               ),
             ),
@@ -125,7 +135,7 @@ class PastOrderScreen extends GetView<PastOrderController> {
     );
   }
 
-  Widget orderListView(BuildContext context) {
+  Widget orderListView(BuildContext context, String emptyMessage) {
     return Obx(
       () => controller.createOrderLoading.value
           ? Center(
@@ -220,14 +230,20 @@ class PastOrderScreen extends GetView<PastOrderController> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Center(
-                      child: Text(
-                        "No Data Available",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.ptSans(
-                          color: AppColors.color333,
-                          fontSize: Get.height / 45,
-                          fontWeight: FontWeight.w700,
+                    Expanded(
+                      child: Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: Get.width * 0.04),
+                        child: Center(
+                          child: Text(
+                            emptyMessage,
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.ptSans(
+                              color: AppColors.color333,
+                              fontSize: Get.height / 45,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                         ),
                       ),
                     ),

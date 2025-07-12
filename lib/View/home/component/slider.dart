@@ -107,8 +107,8 @@ class MyCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.0),
         child: CommonNetworkImage(
           imageUrl: imageUrl ?? "",
-          placeholder: 'assets/images/loading_placeholder.png',
-          errorPlaceholder: 'assets/images/error_image.png',
+          placeholder: 'assets/place_holder.png',
+          errorPlaceholder: 'assets/place_holder.png',
           fit: BoxFit.cover,
         ),
       ),

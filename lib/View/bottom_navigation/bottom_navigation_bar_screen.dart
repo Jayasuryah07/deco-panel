@@ -7,6 +7,7 @@ import 'package:deco_flutter_app/Util/Constant/app_size.dart';
 import 'package:deco_flutter_app/View/home/component/drawer_widget.dart';
 import 'package:deco_flutter_app/View/home/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -61,7 +62,13 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
     return Obx(
       () => WillPopScope(
         onWillPop: () async {
+          if (controller.selectedIndex.value != 0) {
+            controller.drawerKey.currentState?.closeDrawer();
+            controller.selectedIndex.value = 0;
+            return false;
+          }
           if (!controller.canCloseApp()) {
+            controller.drawerKey.currentState?.closeDrawer();
             Get.snackbar('Hold On', 'Press back again to exit',
                 snackPosition: SnackPosition.BOTTOM);
             return false;
@@ -76,6 +83,14 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
           drawer: const DrawerWidget(),
           appBar: AppBar(
             backgroundColor: Colors.white,
+            systemOverlayStyle: const SystemUiOverlayStyle(
+              statusBarColor: AppColors.color42B,
+              statusBarIconBrightness: Brightness.light,
+              statusBarBrightness: Brightness.dark,
+              systemNavigationBarColor: AppColors.color42B,
+              systemNavigationBarIconBrightness: Brightness.light,
+              systemNavigationBarDividerColor: AppColors.whiteColor,
+            ),
             elevation: 0.2,
             surfaceTintColor: Colors.transparent,
             shadowColor: Colors.black.withOpacity(0.4),

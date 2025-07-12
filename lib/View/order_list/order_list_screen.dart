@@ -1,5 +1,6 @@
 import 'package:deco_flutter_app/Util/Constant/app_colors.dart';
 import 'package:deco_flutter_app/Util/Constant/app_size.dart';
+import 'package:deco_flutter_app/Util/custom/custom_toast.dart';
 import 'package:deco_flutter_app/widget/common_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -30,6 +31,8 @@ class OrderListScreen extends GetView<PastOrderController> {
                         size:
                             "${controller.cartList[index].productsSize1 ?? ""}*${controller.cartList[index].productsSize2 ?? ""} ${controller.cartList[index].productsSizeUnit ?? ""}",
                         brand: controller.cartList[index].productsBrand ?? "",
+                        qtyStr: "Qty : ",
+                        isEditable: true,
                         thickness:
                             "${controller.cartList[index].productsThickness ?? ""} ${controller.cartList[index].productsUnit ?? ""}",
                         onDeletePressed: () {
@@ -51,6 +54,7 @@ class OrderListScreen extends GetView<PastOrderController> {
                         },
                         initialValue: controller.cartList[index].cartQuantity,
                         onQtyValueChanged: (val) async {
+                          print(val);
                           await OrderApiService().updateCartApiUrl(
                               loading: controller.updateCartLoading,
                               context: context,
@@ -79,7 +83,7 @@ class OrderListScreen extends GetView<PastOrderController> {
                 .paddingOnly(bottom: AppSize.displayHeight(context) * 0.05)
             : Center(
                 child: Text(
-                  "No Cart Available",
+                  "No Item In Your Cart",
                   textAlign: TextAlign.center,
                   style: GoogleFonts.ptSans(
                     color: AppColors.color333,
@@ -122,6 +126,9 @@ class OrderListScreen extends GetView<PastOrderController> {
                               controller.getOrderList();
                             },
                           );
+                        } else {
+                          customToast(context, "Product Not Available",
+                              ToastType.error);
                         }
                       },
                     ),

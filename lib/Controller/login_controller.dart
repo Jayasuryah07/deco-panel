@@ -13,7 +13,7 @@ class LoginController extends GetxController with WidgetsBindingObserver {
   FirebaseAuth auth = FirebaseAuth.instance;
 
   final GlobalKey<FormState> profileFormKey = GlobalKey<FormState>();
-
+  RxString loginPassword = "".obs;
   Rx<TextEditingController> numberController = TextEditingController().obs;
   final GlobalKey<FormState> loginStoreFormKey = GlobalKey<FormState>();
 

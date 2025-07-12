@@ -16,6 +16,7 @@ import '../../Model/user_detail_model.dart';
 import '../../Model/user_model.dart';
 import '../../RoutesManagment/routes.dart';
 import '../../Util/custom/custom_toast.dart';
+import '../../Util/custom/network_connectivity.dart';
 import '../Providers/api_constants.dart';
 import '../Providers/session_manager.dart';
 
@@ -33,6 +34,11 @@ class ApiService {
     var responsed;
     try {
       loading.value = true;
+      if (!await isConnected()) {
+        //customToast(context, "No internet connection", ToastType.error);
+        loading.value = false;
+        return false;
+      }
       var url = Uri.parse(ApiConstants.checkMobileApiUrl + phone);
       debugPrint(url.toString());
       var response = await http.post(url);
@@ -51,7 +57,7 @@ class ApiService {
 
           if ((jsonDecode(response.body)['msg'] ?? "") ==
               "Mobile Number is Not Registered") {
-            Get.offAllNamed(RouteConstants.editProfileScreen, arguments: {
+            Get.toNamed(RouteConstants.editProfileScreen, arguments: {
               "Number": phone,
             });
           }
@@ -82,7 +88,11 @@ class ApiService {
   }) async {
     try {
       loading.value = true;
-
+      if (!await isConnected()) {
+        //customToast(context, "No internet connection", ToastType.error);
+        loading.value = false;
+        return false;
+      }
       // Prepare the multipart request
       final uri = Uri.parse("${ApiConstants.createUserUrl}");
       var request = http.MultipartRequest('POST', uri);
@@ -148,14 +158,20 @@ class ApiService {
   Future<bool> loginApi({
     required String phone,
     required String password,
+    required String deviceId,
     required BuildContext context,
     required RxBool loading,
   }) async {
     UserModel userDetails = UserModel();
+    if (!await isConnected()) {
+      //customToast(context, "No internet connection", ToastType.error);
+      loading.value = false;
+      return false;
+    }
     loading.value = true;
     try {
-      var url =
-          Uri.parse("${ApiConstants.loginApiUrl}$phone&password=$password");
+      var url = Uri.parse(
+          "${ApiConstants.loginApiUrl}$phone&password=$password&device_id=$deviceId");
       debugPrint("Requesting URL: $url");
 
       var response = await http.post(url);
@@ -163,7 +179,7 @@ class ApiService {
 
       if (response.statusCode == 200) {
         var jsonResponse = jsonDecode(response.body);
-        debugPrint("Response body: ${response.body}");
+        log("Response body: ${response.body}");
 
         if (jsonResponse['code'] == 200) {
           userDetails = userModelFromJson(response.body);
@@ -171,10 +187,11 @@ class ApiService {
           // Save user details in shared preferences
           final SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString("userModel", jsonEncode(userDetails));
-
+          prefs.setString(
+              "userType", jsonEncode(userDetails.data?.user?.userTypeId ?? ''));
+          userType = userDetails.data?.user?.userTypeId ?? 1;
           // Save auth token
           await SessionManager().saveAuthToken(userDetails.data?.token ?? "");
-
           // Navigate to home screen
           Get.offAllNamed(RouteConstants.animatedBottomNavBar);
 
@@ -211,6 +228,11 @@ class ApiService {
       {required BuildContext context, required RxBool loading}) async {
     SliderModel sliderModel = SliderModel();
     token = (await SessionManager().getAuthToken()) ?? "";
+    if (!await isConnected()) {
+      //customToast(context, "No internet connection", ToastType.error);
+      loading.value = false;
+      return SliderModel();
+    }
     try {
       if (userType == 1) {
         loading.value = true;
@@ -249,6 +271,11 @@ class ApiService {
       {required RxBool loading}) async {
     ProductCategoryModel productCategoryModel = ProductCategoryModel();
     try {
+      if (!await isConnected()) {
+        //customToast(context, "No internet connection", ToastType.error);
+        loading.value = false;
+        return ProductCategoryModel();
+      }
       if (userType == 1) {
         loading.value = true;
         var url = Uri.parse(ApiConstants.fetchProductCategoryApiUrl);
@@ -282,6 +309,11 @@ class ApiService {
       {required RxBool loading, required String productCtgId}) async {
     SubCategoryModel subCategoryModel = SubCategoryModel();
     try {
+      if (!await isConnected()) {
+        //customToast(context, "No internet connection", ToastType.error);
+        loading.value = false;
+        return SubCategoryModel();
+      }
       if (userType == 1) {
         loading.value = true;
         var url = Uri.parse(ApiConstants.fetchSubCategoryApiUrl);
@@ -319,6 +351,11 @@ class ApiService {
   }) async {
     UserDataModel userModel = UserDataModel();
     try {
+      if (!await isConnected()) {
+        //customToast(context, "No internet connection", ToastType.error);
+        loading.value = false;
+        return UserDataModel();
+      }
       loading.value = true;
       var url = Uri.parse(ApiConstants.fetchProfileApiUrl);
       debugPrint(url.toString());
@@ -357,6 +394,11 @@ class ApiService {
   }) async {
     try {
       loading.value = true;
+      if (!await isConnected()) {
+        //customToast(context, "No internet connection", ToastType.error);
+        loading.value = false;
+        return false;
+      }
       var url = Uri.parse(ApiConstants.addFeedbackApiUrl);
       debugPrint(url.toString());
       var response = await http.post(url, headers: {
@@ -401,6 +443,11 @@ class ApiService {
     try {
       if (userType == 1) {
         loading.value = true;
+        if (!await isConnected()) {
+          //customToast(context, "No internet connection", ToastType.error);
+          loading.value = false;
+          return [];
+        }
         var url = Uri.parse(ApiConstants.fetchOfferApiUrl);
         debugPrint(url.toString());
         var response = await http.post(
@@ -436,20 +483,21 @@ class ApiService {
     final userModelString = preferences.getString("userModel");
 
     if (userModelString != null && userModelString.isNotEmpty) {
-      try {
-        userDetails = userModelFromJson(userModelString);
+      /*try {*/
+      userDetails = userModelFromJson(userModelString);
 
-        print("username ${userDetails.data?.user?.name} ::: "
-            "${userDetails.data?.user?.mobile} :: "
-            "${userDetails.data?.user?.cpassword}");
+      print("username ${userDetails.data?.user?.name} ::: "
+          "${userDetails.data?.user?.mobile} :: "
+          "${userDetails.data?.user?.cpassword}");
 
-        token = userDetails.data?.token ?? "";
-        userType = userDetails.data?.user?.userTypeId ?? 1;
-      } catch (e) {
+      token = userDetails.data?.token ?? "";
+      var getType = preferences.getString("userType");
+      userType = int.parse(getType ?? "1");
+      /* } catch (e) {
         print("Error decoding userModel JSON: $e");
         // Optional: clear corrupted data
         // await preferences.remove("userModel");
-      }
+      }*/
     } else {
       print("No userModel found in SharedPreferences");
     }

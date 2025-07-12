@@ -37,10 +37,10 @@ class BottomNavController extends GetxController
   RxList<Offerbanner> offerBannerList = <Offerbanner>[].obs;
 
   RxList<BrandData> brandList = <BrandData>[].obs;
-  Rx<BrandData> selectedBrand = BrandData().obs;
+  Rxn<BrandData> selectedBrand = Rxn<BrandData>();
   RxList<ThicknessData> thicknessList = <ThicknessData>[].obs;
-  Rx<ThicknessData> selectedThick = ThicknessData().obs;
-  Rx<SizeData> selectedSize = SizeData().obs;
+  Rxn<ThicknessData> selectedThick = Rxn<ThicknessData>();
+  Rxn<SizeData> selectedSize = Rxn<SizeData>();
   RxList<SizeData> sizeList = <SizeData>[].obs;
   RxList<CategoryProductItem> productItemList = <CategoryProductItem>[].obs;
 
@@ -72,7 +72,10 @@ class BottomNavController extends GetxController
     if (userType == 1) {
       switch (index) {
         case 1:
-          if (Get.find<PastOrderController>().tapIndex.value == 0) {
+          if (Get
+              .find<PastOrderController>()
+              .tapIndex
+              .value == 0) {
             Get.find<PastOrderController>().getOrder("1");
           } else {
             Get.find<PastOrderController>().getOrder("2");
@@ -86,10 +89,16 @@ class BottomNavController extends GetxController
     } else if (userType == 2) {
       switch (index) {
         case 0:
-          Get.find<PastOrderController>().tapIndex.value = 0;
+          Get
+              .find<PastOrderController>()
+              .tapIndex
+              .value = 0;
           Get.find<PastOrderController>().getOrder("1");
         case 1:
-          Get.find<PastOrderController>().tapIndex.value = 2;
+          Get
+              .find<PastOrderController>()
+              .tapIndex
+              .value = 2;
           Get.find<PastOrderController>().getOrder("2");
         case 2:
           Get.find<ProfileController>().getProfileData();
@@ -109,9 +118,9 @@ class BottomNavController extends GetxController
     sliderModel.value = await ApiService()
         .fetchSliderApi(context: Get.context!, loading: isLoading);
     productCategoryModel.value =
-        await ApiService().fetchProductCategoryApi(loading: isLoadingCategory);
+    await ApiService().fetchProductCategoryApi(loading: isLoadingCategory);
     offerBannerList.value =
-        await ApiService().fetchOfferApi(loading: isLoadingOffer);
+    await ApiService().fetchOfferApi(loading: isLoadingOffer);
   }
 
   void getSubCategoryData(String id) async {

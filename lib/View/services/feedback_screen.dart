@@ -3,6 +3,7 @@ import 'package:deco_flutter_app/Data/Services/api_service.dart';
 import 'package:deco_flutter_app/Util/Constant/app_images.dart';
 import 'package:deco_flutter_app/Util/Constant/app_size.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -23,6 +24,14 @@ class FeedBackScreen extends GetView<FeedbackController> {
           elevation: 0.2,
           surfaceTintColor: Colors.transparent,
           shadowColor: Colors.black.withOpacity(0.4),
+          systemOverlayStyle: const SystemUiOverlayStyle(
+            statusBarColor: AppColors.color42B,
+            statusBarIconBrightness: Brightness.light,
+            statusBarBrightness: Brightness.dark,
+            systemNavigationBarColor: AppColors.color42B,
+            systemNavigationBarIconBrightness: Brightness.light,
+            systemNavigationBarDividerColor: AppColors.whiteColor,
+          ),
           flexibleSpace: Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -37,12 +46,16 @@ class FeedBackScreen extends GetView<FeedbackController> {
               ],
             ),
           ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios),
-            onPressed: () {
-              Get.back();
-            },
+          leading: Padding(
+            padding: EdgeInsets.only(left: Get.width * 0.03),
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back_ios),
+              onPressed: () {
+                Get.back();
+              },
+            ),
           ),
+          leadingWidth: Get.width * 0.1,
           title: Text(
             "Feedback",
             style: GoogleFonts.roboto(
@@ -77,11 +90,15 @@ class FeedBackScreen extends GetView<FeedbackController> {
                     ),
                     fillColor: Colors.white,
                     controller: controller.titleCon.value,
+                    textInputAction: TextInputAction.next,
                     hintText: "Title",
+                    counterText: "",
                     keyboardType: TextInputType.text,
+                    textCapitalization: TextCapitalization.words,
+                    maxLength: 50,
                     // Set input type to number
                     validator: (val) {
-                      if (val == null && val!.trim().isEmpty) {
+                      if (val == null || val!.trim().isEmpty) {
                         return 'Please enter title for feedback';
                       }
                       return null;
@@ -99,12 +116,14 @@ class FeedBackScreen extends GetView<FeedbackController> {
                     ),
                     fillColor: Colors.white,
                     controller: controller.descriptionCon.value,
+                    textCapitalization: TextCapitalization.sentences,
                     hintText: "Description",
                     maxLines: 4,
+                    maxLength: 500,
                     keyboardType: TextInputType.text,
                     // Set input type to number
                     validator: (val) {
-                      if (val == null && val!.trim().isEmpty) {
+                      if (val == null || val!.trim().isEmpty) {
                         return 'Please enter Description for feedback';
                       }
                       return null;
@@ -123,7 +142,7 @@ class FeedBackScreen extends GetView<FeedbackController> {
                       Expanded(
                         child: CommonButton(
                           text: 'Submit',
-                          isEnabled: controller.isAble.value,
+                          isEnabled: /*controller.isAble.value*/ true,
                           isLoading: controller.isLoading.value,
                           disabledColor: AppColors.buttonSplashColor,
                           onPressed: () async {

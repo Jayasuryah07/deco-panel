@@ -1,4 +1,6 @@
+import 'package:deco_flutter_app/Util/Constant/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class CommonNetworkImage extends StatelessWidget {
   final String? imageUrl; // The URL of the network image
@@ -10,8 +12,8 @@ class CommonNetworkImage extends StatelessWidget {
   const CommonNetworkImage({
     super.key,
     required this.imageUrl,
-    this.placeholder = 'assets/images/placeholder.png',
-    this.errorPlaceholder = 'assets/images/error_placeholder.png',
+    this.placeholder = 'assets/place_holder.png',
+    this.errorPlaceholder = 'assets/place_holder.png',
     this.fit = BoxFit.cover,
     this.fadeInDuration = const Duration(milliseconds: 300),
   });
@@ -19,7 +21,7 @@ class CommonNetworkImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FadeInImage(
-      placeholder: const NetworkImage(""),
+      placeholder: NetworkImage(""),
       // Placeholder image
       image: NetworkImage(imageUrl ?? ""),
       // Network image
@@ -37,9 +39,15 @@ class CommonNetworkImage extends StatelessWidget {
 
       imageErrorBuilder: (context, error, stackTrace) {
         // Handle error with fallback image
-        return const SizedBox(
-          height: 0,
-          width: 0,
+        return Container(
+          width: Get.height * 0.2,
+          height: Get.height * 0.2,
+          decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(placeholder),
+              ),
+              border: Border.all(color: AppColors.buttonColor),
+              shape: BoxShape.circle),
         );
       },
     );

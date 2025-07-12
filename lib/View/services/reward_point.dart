@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -17,6 +18,14 @@ class RewardPoint extends GetView<FeedbackController> {
         elevation: 0.2,
         surfaceTintColor: Colors.transparent,
         shadowColor: Colors.black.withOpacity(0.4),
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: AppColors.color42B,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+          systemNavigationBarColor: AppColors.color42B,
+          systemNavigationBarIconBrightness: Brightness.light,
+          systemNavigationBarDividerColor: AppColors.whiteColor,
+        ),
         flexibleSpace: Container(
             decoration: BoxDecoration(
           color: Colors.white,
@@ -28,12 +37,16 @@ class RewardPoint extends GetView<FeedbackController> {
             ),
           ],
         )),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            Get.back();
-          },
+        leading: Padding(
+          padding: EdgeInsets.only(left: Get.width * 0.03),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              Get.back();
+            },
+          ),
         ),
+        leadingWidth: Get.width * 0.1,
         title: Text(
           "Reward Point",
           style: GoogleFonts.roboto(

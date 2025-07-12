@@ -2,6 +2,7 @@ import 'package:deco_flutter_app/Data/Services/api_service.dart';
 import 'package:deco_flutter_app/Util/Constant/app_colors.dart';
 import 'package:deco_flutter_app/Util/Constant/app_size.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -21,6 +22,14 @@ class OrderItemViewScreen extends GetView<PastOrderController> {
         elevation: 0.2,
         surfaceTintColor: Colors.transparent,
         shadowColor: Colors.black.withOpacity(0.4),
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: AppColors.color42B,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+          systemNavigationBarColor: AppColors.color42B,
+          systemNavigationBarIconBrightness: Brightness.light,
+          systemNavigationBarDividerColor: AppColors.whiteColor,
+        ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -51,12 +60,16 @@ class OrderItemViewScreen extends GetView<PastOrderController> {
                 ).paddingOnly(right: AppSize.displayWidth(context) * 0.01)
               : const SizedBox(),
         ],
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            Get.back();
-          },
+        leading: Padding(
+          padding: EdgeInsets.only(left: Get.width * 0.03),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              Get.back();
+            },
+          ),
         ),
+        leadingWidth: Get.width * 0.1,
         title: Text(
           "Order Details",
           style: GoogleFonts.roboto(
@@ -336,7 +349,7 @@ class OrderItemViewScreen extends GetView<PastOrderController> {
           flex: 8,
           child: Text(
             subTitle ?? "",
-            textAlign: TextAlign.end,
+            textAlign: TextAlign.start,
             style: GoogleFonts.roboto(
               color: AppColors.color333,
               fontSize: Get.height / 55,

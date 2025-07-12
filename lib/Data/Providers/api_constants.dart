@@ -1,9 +1,4 @@
 class ApiConstants {
-  // static String baseUrl = 'http://127.0.0.1:8000/api_seller/';
-  // static String baseUrl = 'https://euphora.vrutiitsolution.com/api/';
-  // static String baseImageUrl = 'https://euphora.vrutiitsolution.com/image/';
-  //  static String baseUrl = 'https://euphora.vruttiitsolutions.com/api/';
-  // static String baseImageUrl = 'https://euphora.vruttiitsolutions.com/image/';
   static String baseUrl = 'https://decopanel.in/public/api/';
   static String imageBaseUrl = 'https://decopanel.in/storage/app/public/';
 

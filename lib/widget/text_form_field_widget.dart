@@ -28,6 +28,9 @@ class CommonTextField extends StatelessWidget {
   final EdgeInsetsGeometry? contentPadding;
   final Color? fillColor;
   final BorderRadius? borderRadius;
+  final TextCapitalization? textCapitalization;
+  final String? counterText;
+  final TextInputAction? textInputAction;
 
   const CommonTextField({
     super.key,
@@ -50,8 +53,11 @@ class CommonTextField extends StatelessWidget {
     this.focusedBorder,
     this.errorBorder,
     this.contentPadding,
+    this.counterText,
     this.fillColor,
     this.borderRadius,
+    this.textCapitalization,
+    this.textInputAction,
   });
 
   @override
@@ -65,16 +71,18 @@ class CommonTextField extends StatelessWidget {
       maxLines: maxLines,
       onChanged: onChanged,
       onTap: onTap,
+      textInputAction: textInputAction,
       validator: validator,
+      textCapitalization: textCapitalization ?? TextCapitalization.none,
       style: textStyle ??
-          AppStyle.textStyleMedium16(fontColor: AppColors.hintColor),
+          AppStyle.textStyleMedium16(fontColor: AppColors.darkHintColor),
       decoration: InputDecoration(
         hintText: hintText,
         labelText: labelText,
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
         counter: null,
-        counterText: "",
+        counterText: counterText,
         fillColor: fillColor ?? AppColors.colorF91.withOpacity(0.15),
         filled: true,
         hintStyle: hintStyle ??
@@ -221,6 +229,7 @@ class CustomRoundedTextField extends StatelessWidget {
   final bool? enabled;
   final int? maxLength;
   final int? maxLines;
+  final TextCapitalization? textCapitalization;
   final Function(String)? onChanged;
   final Function()? onTap;
   final TextStyle? textStyle;
@@ -232,6 +241,7 @@ class CustomRoundedTextField extends StatelessWidget {
   final Color? fillColor;
   final BorderRadius? borderRadius;
   final TextInputAction? textInputAction;
+  final String? counterText;
 
   const CustomRoundedTextField({
     super.key,
@@ -253,11 +263,13 @@ class CustomRoundedTextField extends StatelessWidget {
     this.textStyle,
     this.hintStyle,
     this.enabledBorder,
+    this.counterText,
     this.focusedBorder,
     this.errorBorder,
     this.contentPadding,
     this.fillColor,
     this.borderRadius,
+    this.textCapitalization,
     this.textInputAction,
   });
 
@@ -271,6 +283,7 @@ class CustomRoundedTextField extends StatelessWidget {
       obscureText: isObscure ?? false,
       keyboardType: keyboardType,
       textInputAction: textInputAction,
+      textCapitalization: textCapitalization ?? TextCapitalization.none,
       maxLength: maxLength,
       maxLines: maxLines,
       readOnly: readOnly ?? false,

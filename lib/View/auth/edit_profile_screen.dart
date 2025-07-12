@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:deco_flutter_app/Util/Constant/app_images.dart';
 import 'package:deco_flutter_app/Util/Constant/app_size.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,6 +14,7 @@ import '../../Data/Services/api_service.dart';
 import '../../RoutesManagment/routes.dart';
 import '../../Util/Constant/app_colors.dart';
 import '../../Util/custom/custom_toast.dart';
+import '../../Util/custom/network_connectivity.dart';
 import '../../widget/common_button.dart';
 import '../../widget/text_form_field_widget.dart';
 import 'login_screen.dart';
@@ -77,11 +81,14 @@ class EditProfileScreen extends GetView<LoginController> {
               labelText: "Name",
               controller: controller.nameCon.value,
               textInputAction: TextInputAction.next,
+              textCapitalization: TextCapitalization.words,
+              keyboardType: TextInputType.name,
+              maxLength: 50,
               onChanged: (p0) {
                 controller.isAbleFun2();
               },
               validator: (value) {
-                if (value == null && value!.trim().isEmpty) {
+                if (value == null || value!.trim().isEmpty) {
                   return "Please enter your name";
                 }
                 return null;
@@ -99,7 +106,7 @@ class EditProfileScreen extends GetView<LoginController> {
                 controller.isAbleFun2();
               },
               validator: (value) {
-                if (value == null && value!.trim().isEmpty) {
+                if (value == null || value!.trim().isEmpty) {
                   return "Please enter your number";
                 } else if (value.length != 10) {
                   return "Please enter valid number";
@@ -110,13 +117,14 @@ class EditProfileScreen extends GetView<LoginController> {
             CustomRoundedTextField(
               labelText: "Email",
               controller: controller.emailCon.value,
+              maxLength: 50,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
               onChanged: (p0) {
                 controller.isAbleFun2();
               },
               validator: (value) {
-                if (value == null && value!.trim().isEmpty) {
+                if (value == null || value!.trim().isEmpty) {
                   return "Please enter your number";
                 }
                 return null;
@@ -125,12 +133,15 @@ class EditProfileScreen extends GetView<LoginController> {
             CustomRoundedTextField(
               labelText: "Area",
               controller: controller.areaCon.value,
+              textCapitalization: TextCapitalization.words,
+              keyboardType: TextInputType.name,
               textInputAction: TextInputAction.next,
+              maxLength: 50,
               onChanged: (p0) {
                 controller.isAbleFun2();
               },
               validator: (value) {
-                if (value == null && value!.trim().isEmpty) {
+                if (value == null || value!.trim().isEmpty) {
                   return "Please enter your area";
                 }
                 return null;
@@ -139,6 +150,8 @@ class EditProfileScreen extends GetView<LoginController> {
             CustomRoundedTextField(
               labelText: "Address",
               controller: controller.addressCon.value,
+              textCapitalization: TextCapitalization.sentences,
+              maxLength: 250,
               textInputAction: TextInputAction.done,
               onChanged: (p0) {
                 controller.isAbleFun2();
@@ -192,12 +205,20 @@ class EditProfileScreen extends GetView<LoginController> {
                 Obx(
                   () => CommonButton(
                     width: AppSize.displayWidth(context) * 0.6,
-                    text: 'Save & Next',
-                    isEnabled: controller.isAble2.value,
+                    text: 'Register',
+                    isEnabled: /*controller.isAble2.value*/ true,
                     isLoading: controller.isLoading.value,
                     onPressed: () async {
                       FocusScope.of(context).unfocus();
                       if (controller.profileFormKey.currentState!.validate()) {
+                        if (!(await NetworkConnectivity.checkInternet())) {
+                          Get.snackbar(
+                            "No Internet",
+                            'Please check your internet connection',
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
+                          return;
+                        }
                         await ApiService()
                             .updateUserApiUrl(
                           context: context,
@@ -216,7 +237,17 @@ class EditProfileScreen extends GetView<LoginController> {
                                 appVerificationDisabledForTesting:
                                     false, // Ensure this is false for production
                               );
-
+                              var firebaseToken;
+                              if (Platform.isIOS) {
+                                firebaseToken = await FirebaseMessaging.instance
+                                    .getAPNSToken();
+                                debugPrint('APNS Token: $token');
+                              } else {
+                                FirebaseMessaging messaging =
+                                    FirebaseMessaging.instance;
+                                firebaseToken = await messaging.getToken();
+                                debugPrint('APNS Token: $token');
+                              }
                               await FirebaseAuth.instance.verifyPhoneNumber(
                                 phoneNumber:
                                     "+91${controller.mobileCon.value.text.trim()}",
@@ -253,8 +284,8 @@ class EditProfileScreen extends GetView<LoginController> {
                                       );
                                   }
                                 },
-                                codeSent:
-                                    (String verificationId, int? resendToken) {
+                                codeSent: (String verificationId,
+                                    int? resendToken) async {
                                   otpController.resendToken.value =
                                       resendToken ?? 0;
                                   otpController.verify.value = verificationId;
@@ -268,6 +299,9 @@ class EditProfileScreen extends GetView<LoginController> {
                                   Get.offAllNamed(RouteConstants.otpScreen,
                                       arguments: {
                                         "no": controller.mobileCon.value.text,
+                                        "password":
+                                            value["user"]['cpassword'] ?? "",
+                                        "deviceId": firebaseToken
                                       });
                                   controller.isLoading.value =
                                       false; // Stop the loader
@@ -286,7 +320,7 @@ class EditProfileScreen extends GetView<LoginController> {
                             } else {
                               customToast(
                                 context,
-                                "Failed to send the OTP. Please try again.",
+                                value['msg'] ?? "",
                                 ToastType.error,
                               );
                               controller.isLoading.value =

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -20,6 +21,14 @@ class QuotationView extends GetView<PastOrderController> {
         elevation: 0.2,
         surfaceTintColor: Colors.transparent,
         shadowColor: Colors.black.withOpacity(0.4),
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: AppColors.color42B,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+          systemNavigationBarColor: AppColors.color42B,
+          systemNavigationBarIconBrightness: Brightness.light,
+          systemNavigationBarDividerColor: AppColors.whiteColor,
+        ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -34,12 +43,16 @@ class QuotationView extends GetView<PastOrderController> {
             ],
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            Get.back();
-          },
+        leading: Padding(
+          padding: EdgeInsets.only(left: Get.width * 0.03),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              Get.back();
+            },
+          ),
         ),
+        leadingWidth: Get.width * 0.1,
         title: Text(
           "Quotation",
           style: GoogleFonts.roboto(
@@ -85,6 +98,7 @@ class QuotationView extends GetView<PastOrderController> {
                             fontSize: Get.height / 45,
                             fontWeight: FontWeight.w700,
                             color: AppColors.color333,
+                            letterSpacing: 1,
                           ),
                         ).paddingOnly(
                             bottom: AppSize.displayHeight(context) * 0.02),
@@ -108,7 +122,7 @@ class QuotationView extends GetView<PastOrderController> {
                                   "Ref No. : ${controller.quotationModel.value.quotation?.orderRef ?? ""}",
                                   style: GoogleFonts.ptSans(
                                     fontSize: Get.height / 70,
-                                    fontWeight: FontWeight.w400,
+                                    fontWeight: FontWeight.w600,
                                     color: AppColors.color333,
                                   ),
                                 ),
@@ -116,7 +130,7 @@ class QuotationView extends GetView<PastOrderController> {
                                   "Date : ${formatDateFromString(controller.quotationModel.value.quotation?.quotationDate?.toString() ?? "")}",
                                   style: GoogleFonts.ptSans(
                                     fontSize: Get.height / 70,
-                                    fontWeight: FontWeight.w400,
+                                    fontWeight: FontWeight.w600,
                                     color: AppColors.color333,
                                   ),
                                 ),
@@ -132,7 +146,11 @@ class QuotationView extends GetView<PastOrderController> {
                           total: controller.quotationModel.value.quotationSub
                                   ?.fold(
                                       0.0,
-                                      (previousValue, element) => previousValue + (double.parse(element.quotationSubAmount.toString())))
+                                      (previousValue, element) =>
+                                          previousValue +
+                                          (double.parse(element
+                                              .quotationSubAmount
+                                              .toString())))
                                   .toString() ??
                               "0",
                         ),
@@ -195,7 +213,9 @@ class QuotationView extends GetView<PastOrderController> {
                                       0.0,
                                       (previousValue, element) =>
                                           previousValue +
-                                          (double.parse(element.quotationSubAmount.toString())))
+                                          (double.parse(element
+                                              .quotationSubAmount
+                                              .toString())))
                                   .toString() ??
                               "0",
                         );

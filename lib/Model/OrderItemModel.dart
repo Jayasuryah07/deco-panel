@@ -181,7 +181,7 @@ class OrderSub {
         ordersSubSizeUnit: json["orders_sub_size_unit"],
         ordersSubRate: json["orders_sub_rate"],
         ordersSubQuantity: json["orders_sub_quantity"],
-        ordersSubAmount: json["orders_sub_amount"]?.toDouble(),
+        ordersSubAmount: json["orders_sub_amount"],
         productSubCategory: json["product_sub_category"],
       );
 

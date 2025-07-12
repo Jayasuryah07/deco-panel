@@ -26,7 +26,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     if (userType == 1) {1: "Home", 2: AppImages.homeIcon},
     {1: "Profile", 2: AppImages.profileIcon},
     {1: "Order List ", 2: AppImages.orderListIcon},
-    {1: "Reward Points", 2: AppImages.pastOrdersIcon},
+    // {1: "Reward Points", 2: AppImages.pastOrdersIcon},
     {1: "Feedback", 2: AppImages.feedbackIcon},
     {1: "About Us", 2: AppImages.aboutUsIconIcon},
     {1: "Logout", 2: AppImages.logoutIcon},
@@ -132,18 +132,18 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                         break;
                       case 2:
                         con.drawerKey.currentState?.closeDrawer();
-                        con.changeIndex(2);
+                        con.changeIndex(1);
                         break;
-                      case 3:
+                      /*   case 3:
                         Get.toNamed(RouteConstants.rewardPoint);
-                        break;
-                      case 5:
+                        break;*/
+                      case 4:
                         Get.toNamed(RouteConstants.aboutUsScreen);
                         break;
-                      case 4:
+                      case 3:
                         Get.toNamed(RouteConstants.feedBackScreen);
                         break;
-                      case 6:
+                      case 5:
                         showLogoutDialog(context);
                         break;
                       default:
@@ -152,22 +152,22 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     switch (index) {
                       case 0:
                         con.drawerKey.currentState?.closeDrawer();
-                        con.changeIndex(1);
+                        con.changeIndex(2);
                         break;
                       case 1:
                         con.drawerKey.currentState?.closeDrawer();
                         con.changeIndex(0);
                         break;
-                      case 2:
+                      /*case 2:
                         Get.toNamed(RouteConstants.rewardPoint);
-                        break;
-                      case 4:
+                        break;*/
+                      case 3:
                         Get.toNamed(RouteConstants.aboutUsScreen);
                         break;
-                      case 3:
+                      case 2:
                         Get.toNamed(RouteConstants.feedBackScreen);
                         break;
-                      case 5:
+                      case 4:
                         showLogoutDialog(context);
                         break;
                       default:

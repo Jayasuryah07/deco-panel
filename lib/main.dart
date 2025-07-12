@@ -1,12 +1,15 @@
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import 'RoutesManagment/pages.dart';
 import 'RoutesManagment/routes.dart';
 import 'RoutesManagment/screen_bindings.dart';
+import 'Util/Constant/app_colors.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +38,21 @@ Future<void> main() async {
       ),
     );
   }
+  await FirebaseMessaging.instance.requestPermission();
+
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: AppColors.color42B,
+    // Background color of status bar
+    statusBarIconBrightness: Brightness.light,
+    // Color of icons (light = white icons)
+    statusBarBrightness: Brightness.dark,
+    // For iOS
+    systemNavigationBarColor: AppColors.color42B,
+    // Navigation bar background
+    systemNavigationBarIconBrightness: Brightness.light,
+    // Icons color in navigation bar
+    systemNavigationBarDividerColor: AppColors.whiteColor,
+  ));
   runApp(const MyApp());
 }
 
@@ -53,7 +71,7 @@ class MyApp extends StatelessWidget {
             const ColorScheme.highContrastLight(background: Colors.white),
         useMaterial3: true,
       ),
-      initialRoute: RouteConstants.splashCommonPage,
+      initialRoute: RouteConstants.splashScreen,
       getPages: AllPages.getPages(),
       initialBinding: ScreenBindings(),
     );

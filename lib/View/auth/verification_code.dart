@@ -1,4 +1,5 @@
-import 'package:deco_flutter_app/Data/Services/api_service.dart';
+import 'dart:async';
+
 import 'package:deco_flutter_app/Util/Constant/app_size.dart';
 import 'package:deco_flutter_app/View/auth/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,9 +9,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 
 import '../../Controller/login_controller.dart';
+import '../../Data/Services/api_service.dart';
 import '../../Util/Constant/app_colors.dart';
 import '../../Util/Constant/app_images.dart';
 import '../../Util/custom/custom_toast.dart';
+import '../../Util/custom/network_connectivity.dart';
 import '../../widget/common_button.dart';
 
 class OtpScreen extends StatefulWidget {
@@ -23,19 +26,49 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   LoginController loginController = Get.put(LoginController());
 
+  /// GLOBAL KEY FOR VERIFY OTP
+  final GlobalKey<FormState> otpFormKey = GlobalKey<FormState>();
+
   // OtpController controller = Get.put(OtpController());
   int backspaceCount = 0;
 
   // final telephony = Telephony.instance;
   RxBool checkTermsCondition = false.obs;
 
+  /// Resend Timer
+  final otp = "".obs;
+  RxString verify = ''.obs;
+  RxInt resendToken = 0.obs;
+  late Timer _timer;
+  final start = 30.obs;
+  FirebaseAuth auth = FirebaseAuth.instance;
+
+  void startTimer() {
+    const oneSec = Duration(seconds: 1);
+
+    _timer = Timer.periodic(oneSec, (Timer timer) {
+      if (start.value < 1) {
+        timer.cancel();
+      } else {
+        start.value = start.value - 1;
+      }
+    });
+  }
+
   //final controller = WebViewController();
 
   @override
   void initState() {
     // TODO: implement initState
+    startTimer();
     //listenToIncomingSMS(context);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
   /* void listenToIncomingSMS(BuildContext context) {
@@ -60,6 +93,19 @@ class _OtpScreenState extends State<OtpScreen> {
   }*/
 
   Future<void> sendOTP() async {
+    if (!(await NetworkConnectivity.checkInternet())) {
+      Get.snackbar(
+        "No Internet",
+        'Please check your internet connection',
+        snackPosition: SnackPosition.BOTTOM, // Position: TOP or BOTTOM
+      );
+      return;
+    }
+    loginController.numberController.value.text =
+        Get.arguments != null && Get.arguments["no"] != null
+            ? Get.arguments["no"]
+            : "";
+    print("Verify number ${loginController.numberController.value.text}");
     await loginController.auth
         .setSettings(appVerificationDisabledForTesting: true);
     await FirebaseAuth.instance.verifyPhoneNumber(
@@ -115,6 +161,8 @@ class _OtpScreenState extends State<OtpScreen> {
         otpController.resendToken.value = resendToken ?? 0;
         otpController.verify.value = verificationId;
         customToast(context, "OTP Sent Successfully", ToastType.success);
+        otpController.start.value = 30;
+        otpController.startTimer();
         //listenToIncomingSMS(context);
         // mobileNumberController.isButtonLoading.value =
         // false;
@@ -143,6 +191,8 @@ class _OtpScreenState extends State<OtpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
+          child: Form(
+        key: otpFormKey,
         child: Obx(
           () => Container(
             padding: EdgeInsets.only(
@@ -192,6 +242,14 @@ class _OtpScreenState extends State<OtpScreen> {
                     length: 6,
                     controller: otpController.otpController.value,
                     hapticFeedbackType: HapticFeedbackType.lightImpact,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Please enter otp";
+                      } else if (value.length != 6) {
+                        return "Please enter valid otp";
+                      }
+                      return null;
+                    },
                     followingPinTheme: PinTheme(
                       width: AppSize.displayWidth(context) * 0.14,
                       height: AppSize.displayWidth(context) * 0.14,
@@ -262,31 +320,44 @@ class _OtpScreenState extends State<OtpScreen> {
                 SizedBox(
                   height: AppSize.displayHeight(context) * 0.06,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Didn't receive the code?",
-                      style: GoogleFonts.ptSans(
-                        fontSize: Get.height / 50,
-                        fontWeight: FontWeight.normal,
-                        color: AppColors.color449,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        sendOTP();
-                      },
-                      child: Text(
-                        " Resend",
-                        style: GoogleFonts.ptSans(
-                          fontSize: Get.height / 50,
+                Obx(
+                  () => Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        otpController.start.value == 0
+                            ? "Didn't received OTP - "
+                            : "Resend OTP in ",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: AppColors.textBlack,
                           fontWeight: FontWeight.w500,
-                          color: AppColors.colorF45,
                         ),
                       ),
-                    ),
-                  ],
+                      otpController.start.value != 0
+                          ? Text(
+                              "00:${otpController.start.value.toString().length == 1 ? "0${otpController.start.value}" : otpController.start.value}",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: AppColors.textBlack,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            )
+                          : GestureDetector(
+                              onTap: () async {
+                                sendOTP();
+                              },
+                              child: const Text(
+                                "Resend",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: AppColors.buttonColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                    ],
+                  ),
                 ),
                 SizedBox(
                   height: AppSize.displayHeight(context) * 0.05,
@@ -300,10 +371,83 @@ class _OtpScreenState extends State<OtpScreen> {
                         width: AppSize.displayWidth(context) * 0.5,
                         text: 'Verify the Code',
                         isLoading: otpController.isLoading.value,
-                        isEnabled: otpController.isAble.value,
+                        isEnabled: /*otpController.isAble.value*/ true,
                         onPressed: () async {
                           FocusScope.of(context).unfocus();
                           print(otpController.verify.value);
+                          if (otpFormKey.currentState!.validate()) {
+                            try {
+                              if (!(await NetworkConnectivity
+                                  .checkInternet())) {
+                                Get.snackbar(
+                                  "No Internet",
+                                  'Please check your internet connection',
+                                  snackPosition: SnackPosition
+                                      .BOTTOM, // Position: TOP or BOTTOM
+                                );
+                                return;
+                              }
+                              otpController.isLoading.value = true;
+                              PhoneAuthCredential credential =
+                                  PhoneAuthProvider.credential(
+                                verificationId: otpController.verify.value,
+                                smsCode: otpController.otpController.value.text,
+                              );
+
+                              print(
+                                  "login password::::::::::: ${Get.arguments != null && Get.arguments["password"] != null ? Get.arguments["password"] : ""}");
+                              print(
+                                  "login deviceId::::::::::: ${Get.arguments != null && Get.arguments["deviceId"] != null ? Get.arguments["deviceId"] : ""}");
+                              // controller.postCheckMobileApi({"mobile": mobileNumberController.mobileNumberController.value.text.trim()});
+                              await ApiService().loginApi(
+                                password: Get.arguments != null &&
+                                        Get.arguments["password"] != null
+                                    ? Get.arguments["password"]
+                                    : "",
+                                phone: Get.arguments != null &&
+                                        Get.arguments["no"] != null
+                                    ? Get.arguments["no"]
+                                    : "",
+                                context: context,
+                                loading: otpController.isLoading,
+                                deviceId: Get.arguments != null &&
+                                        Get.arguments["deviceId"] != null
+                                    ? Get.arguments["deviceId"]
+                                    : "",
+                              );
+                              otpController.otpController.value.clear();
+                              otpController.isLoading.value =
+                                  false; // Stop the loader in case of an error
+                            } on FirebaseAuthException catch (error) {
+                              otpController.isLoading.value =
+                                  false; // Stop the loader in case of an error
+
+                              if (error.code == 'invalid-verification-code') {
+                                customToast(
+                                  context,
+                                  "Invalid OTP",
+                                  ToastType.warning,
+                                );
+                              } else {
+                                customToast(
+                                  context,
+                                  "Error: ${"Something went wrong"}",
+                                  ToastType.error,
+                                );
+                              }
+                              otpController.isLoading.value =
+                                  false; // Stop the loader in case of an error
+                            } catch (e) {
+                              customToast(
+                                context,
+                                "Error: ${e}",
+                                ToastType.error,
+                              );
+                              print("error >>>>>>>>>>>>> $e");
+                              otpController.isLoading.value =
+                                  false; // Ensure the loader is stopped
+                            }
+                          }
                           //await ApiService().loginApi(
                           //    phone: Get.arguments != null &&
                           //            Get.arguments["no"] != null
@@ -315,55 +459,6 @@ class _OtpScreenState extends State<OtpScreen> {
                           //    loading: otpController.isLoading);
                           //otpController.otpController.value.clear();
                           //otpController.isLoading.value = false;
-                          try {
-                            otpController.isLoading.value = true;
-                            PhoneAuthCredential credential =
-                                PhoneAuthProvider.credential(
-                              verificationId: otpController.verify.value,
-                              smsCode: otpController.otpController.value.text,
-                            );
-                            await FirebaseAuth.instance
-                                .signInWithCredential(credential);
-                            // controller.postCheckMobileApi({"mobile": mobileNumberController.mobileNumberController.value.text.trim()});
-                            await ApiService().loginApi(
-                                password: "123456",
-                                phone: Get.arguments != null &&
-                                        Get.arguments["no"] != null
-                                    ? Get.arguments["no"]
-                                    : "",
-                                context: context,
-                                loading: otpController.isLoading);
-                            otpController.isLoading.value =
-                                false; // Stop the loader in case of an error
-                          } on FirebaseAuthException catch (error) {
-                            otpController.isLoading.value =
-                                false; // Stop the loader in case of an error
-
-                            if (error.code == 'invalid-verification-code') {
-                              customToast(
-                                context,
-                                "Invalid OTP",
-                                ToastType.warning,
-                              );
-                            } else {
-                              customToast(
-                                context,
-                                "Error: ${"Something went wrong"}",
-                                ToastType.error,
-                              );
-                            }
-                            otpController.isLoading.value =
-                                false; // Stop the loader in case of an error
-                          } catch (e) {
-                            customToast(
-                              context,
-                              "Error: ${e}",
-                              ToastType.error,
-                            );
-                            print("error >>>>>>>>>>>>> $e");
-                            otpController.isLoading.value =
-                                false; // Ensure the loader is stopped
-                          }
                         },
                       ),
                     )
@@ -373,7 +468,7 @@ class _OtpScreenState extends State<OtpScreen> {
             ),
           ),
         ),
-      ),
+      )),
     );
   }
 }

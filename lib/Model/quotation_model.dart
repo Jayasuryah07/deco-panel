@@ -133,7 +133,7 @@ class QuotationSub {
   int? quotationSubQuantity;
   String? productCategoryImage;
   String? productSubCategoryImage;
-  double? quotationSubRate;
+  dynamic quotationSubRate;
   dynamic quotationSubAmount;
 
   QuotationSub({
@@ -168,7 +168,7 @@ class QuotationSub {
     int? quotationSubQuantity,
     String? productCategoryImage,
     String? productSubCategoryImage,
-    double? quotationSubRate,
+    dynamic quotationSubRate,
     dynamic quotationSubAmount,
   }) =>
       QuotationSub(
@@ -206,7 +206,7 @@ class QuotationSub {
         quotationSubQuantity: json["quotation_sub_quantity"],
         productCategoryImage: json["product_category_image"],
         productSubCategoryImage: json["product_sub_category_image"],
-        quotationSubRate: json["quotation_sub_rate"]?.toDouble(),
+        quotationSubRate: json["quotation_sub_rate"],
         quotationSubAmount: json["quotation_sub_amount"],
       );
 

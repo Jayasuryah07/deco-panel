@@ -159,7 +159,7 @@ class ProfileScreen extends GetView<ProfileController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              width: AppSize.displayWidth(context) * 0.09,
+              width: AppSize.displayWidth(context) * 0.04,
             ),
             Expanded(
               flex: 2,
@@ -186,6 +186,9 @@ class ProfileScreen extends GetView<ProfileController> {
                   fontWeight: FontWeight.w500,
                 ),
               ),
+            ),
+            SizedBox(
+              width: AppSize.displayWidth(context) * 0.04,
             ),
           ],
         ),

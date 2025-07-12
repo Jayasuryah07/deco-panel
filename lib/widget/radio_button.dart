@@ -11,6 +11,7 @@ class RadioButtonWithSplash extends StatelessWidget {
   final ValueChanged<bool> onChanged;
   final String label;
   final VoidCallback onTermsTap;
+  final VoidCallback onIAccept;
   final VoidCallback onPrivacyPolicyTap;
 
   const RadioButtonWithSplash({
@@ -19,6 +20,7 @@ class RadioButtonWithSplash extends StatelessWidget {
     required this.onChanged,
     required this.label,
     required this.onTermsTap,
+    required this.onIAccept,
     required this.onPrivacyPolicyTap,
   });
 
@@ -53,15 +55,18 @@ class RadioButtonWithSplash extends StatelessWidget {
                     fontSize: Get.height / 52,
                     fontWeight: FontWeight.w400,
                     color: AppColors.colorA6D,
+                    letterSpacing: 1,
                   ),
+                  recognizer: TapGestureRecognizer()..onTap = onIAccept,
                 ),
                 TextSpan(
-                  text: "terms & condition",
+                  text: "Terms & Conditions",
                   style: GoogleFonts.ptSans(
                     fontSize: Get.height / 52,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.bold,
                     color: AppColors.color449,
                     decoration: TextDecoration.underline,
+                    letterSpacing: 1,
                   ),
                   recognizer: TapGestureRecognizer()..onTap = onTermsTap,
                 ),

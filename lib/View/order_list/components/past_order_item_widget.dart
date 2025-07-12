@@ -15,7 +15,9 @@ class PastOrderItem extends GetView<PastOrderController> {
   final String? networkImage;
   final String? subTitle;
   final String? size;
+  final String? qtyStr;
   final String? thickness;
+  final bool isEditable;
   final String? brand;
   final Widget? orderWidget;
   final Widget? statusWidget;
@@ -32,8 +34,10 @@ class PastOrderItem extends GetView<PastOrderController> {
       {super.key,
       this.title,
       this.onTap,
+      this.isEditable = false,
       this.initialValue,
       this.initialQuo,
+      this.qtyStr,
       this.onQtyValueChanged,
       this.onQty2ValueChanged,
       this.orderWidget,
@@ -105,8 +109,8 @@ class PastOrderItem extends GetView<PastOrderController> {
                     width: AppSize.displayHeight(context) * 0.11,
                     child: CommonNetworkImage(
                       imageUrl: networkImage ?? "",
-                      placeholder: 'assets/images/loading_placeholder.png',
-                      errorPlaceholder: 'assets/images/error_image.png',
+                      placeholder: 'assets/place_holder.png',
+                      errorPlaceholder: 'assets/place_holder.png',
                       fit: BoxFit.fill,
                       fadeInDuration: const Duration(milliseconds: 500),
                     ),
@@ -155,44 +159,60 @@ class PastOrderItem extends GetView<PastOrderController> {
                                 title: "Thickness",
                                 subTitle: thickness,
                               ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  PlusMinusContainer(
-                                    initialValue: initialValue!,
-                                    onValueChanged:
-                                        onQtyValueChanged ?? (p0) {},
-                                  ),
-                                  if (initialQuo != null)
-                                    PlusMinusContainer(
-                                      initialValue: initialQuo!,
-                                      onValueChanged:
-                                          onQty2ValueChanged ?? (p0) {},
-                                    ).paddingOnly(
-                                        left: AppSize.displayWidth(context) *
-                                            0.04)
-                                  else if (initialQuo == null) ...[
-                                    const Spacer(),
-                                    IconButton(
-                                      onPressed: onDeletePressed ?? () {},
-                                      icon: Image.asset(
-                                        AppImages.deleteIcon,
-                                        height: AppSize.displayHeight(context) *
-                                            0.022,
-                                      ),
-                                    ),
-                                  ]
-                                ],
-                              ).paddingOnly(
-                                  top: AppSize.displayHeight(context) * 0.01),
                             ],
-                          )
+                          ),
                     ],
                   ),
                 ),
                 if (statusWidget != null) statusWidget!
               ],
             ),
+            if (statusWidget == null)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    qtyStr ?? "Rate : ",
+                    textAlign: TextAlign.start,
+                    style: GoogleFonts.ptSans(
+                      fontSize: Get.height / 55,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.color333,
+                    ),
+                  ),
+                  PlusMinusContainer(
+                    initialValue: initialValue ?? 1,
+                    isEditable: isEditable,
+                    onValueChanged: onQtyValueChanged ?? (p0) {},
+                  ),
+                  if (initialQuo != null)
+                    Text(
+                      "Qty : ",
+                      textAlign: TextAlign.start,
+                      style: GoogleFonts.ptSans(
+                        fontSize: Get.height / 55,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.color333,
+                      ),
+                    ).paddingOnly(left: AppSize.displayWidth(context) * 0.04),
+                  if (initialQuo != null)
+                    PlusMinusContainer(
+                      initialValue: initialQuo!,
+                      isEditable: true,
+                      onValueChanged: onQty2ValueChanged ?? (p0) {},
+                    ) /*.paddingOnly(left: AppSize.displayWidth(context) * 0.04)*/
+                  else if (initialQuo == null) ...[
+                    const Spacer(),
+                    IconButton(
+                      onPressed: onDeletePressed ?? () {},
+                      icon: Image.asset(
+                        AppImages.deleteIcon,
+                        height: AppSize.displayHeight(context) * 0.022,
+                      ),
+                    ),
+                  ]
+                ],
+              ).paddingOnly(top: AppSize.displayHeight(context) * 0.005),
             const Divider(
               color: AppColors.colorDDD,
             )
@@ -205,11 +225,13 @@ class PastOrderItem extends GetView<PastOrderController> {
 
 class PlusMinusContainer extends StatefulWidget {
   final int initialValue;
+  final bool isEditable;
   final Function(int) onValueChanged;
 
   const PlusMinusContainer({
     super.key,
-    this.initialValue = 1, // Default value set to 1
+    this.initialValue = 1,
+    this.isEditable = false,
     required this.onValueChanged,
   });
 
@@ -219,16 +241,19 @@ class PlusMinusContainer extends StatefulWidget {
 
 class PlusMinusContainerState extends State<PlusMinusContainer> {
   late int _currentValue;
+  late TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
     _currentValue = widget.initialValue;
+    _controller = TextEditingController(text: _currentValue.toString());
   }
 
   void _increment() {
     setState(() {
       _currentValue++;
+      _controller.text = _currentValue.toString();
     });
     widget.onValueChanged(_currentValue);
   }
@@ -237,17 +262,35 @@ class PlusMinusContainerState extends State<PlusMinusContainer> {
     if (_currentValue > 1) {
       setState(() {
         _currentValue--;
+        _controller.text = _currentValue.toString();
+      });
+      widget.onValueChanged(_currentValue);
+    }
+  }
+
+  void _onManualChange(String value) {
+    final int? newValue = int.tryParse(value);
+    if (newValue != null && newValue >= 1) {
+      setState(() {
+        _currentValue = newValue;
       });
       widget.onValueChanged(_currentValue);
     }
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-          horizontal: defaultPadding / 2,
-          vertical: AppSize.displayHeight(context) * 0.002),
+        horizontal: defaultPadding / 2,
+        vertical: AppSize.displayHeight(context) * 0.005,
+      ),
       decoration: BoxDecoration(
         color: AppColors.color6F6,
         border: Border.all(color: Colors.grey),
@@ -260,32 +303,46 @@ class PlusMinusContainerState extends State<PlusMinusContainer> {
             onTap: _currentValue > 1 ? _decrement : null,
             child: Icon(
               Icons.remove,
-              color: _currentValue > 1
-                  ? AppColors.textBlack
-                  : Colors.grey, // Change color to indicate disabled
-              size: AppSize.displayHeight(context) * 0.02,
+              color: _currentValue > 1 ? AppColors.textBlack : Colors.grey,
+              size: AppSize.displayHeight(context) * 0.03,
             ),
           ),
-          SizedBox(
-            width: AppSize.displayWidth(context) * 0.03,
-          ),
-          Text(
-            _currentValue.toString(),
-            style: GoogleFonts.ptSans(
-              fontSize: Get.height / 65,
-              fontWeight: FontWeight.w700,
-              color: AppColors.color333,
-            ),
-          ),
-          SizedBox(
-            width: AppSize.displayWidth(context) * 0.03,
-          ),
+          SizedBox(width: AppSize.displayWidth(context) * 0.04),
+          widget.isEditable
+              ? SizedBox(
+                  width: AppSize.displayWidth(context) * 0.08,
+                  child: TextField(
+                    controller: _controller,
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    onChanged: _onManualChange,
+                    style: GoogleFonts.ptSans(
+                      fontSize: Get.height / 50,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.color333,
+                    ),
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                      border: InputBorder.none,
+                    ),
+                  ),
+                )
+              : Text(
+                  _currentValue.toString(),
+                  style: GoogleFonts.ptSans(
+                    fontSize: Get.height / 50,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.color333,
+                  ),
+                ),
+          SizedBox(width: AppSize.displayWidth(context) * 0.04),
           InkWell(
             onTap: _increment,
             child: Icon(
               Icons.add,
               color: AppColors.textBlack,
-              size: AppSize.displayHeight(context) * 0.02,
+              size: AppSize.displayHeight(context) * 0.03,
             ),
           ),
         ],
@@ -327,6 +384,27 @@ Widget pastOrderWidget(
       SizedBox(
         height: AppSize.displayHeight(context) * 0.002,
       ),
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Order Number: ",
+            style: GoogleFonts.ptSans(
+              fontSize: Get.height / 65,
+              fontWeight: FontWeight.w400,
+              color: AppColors.color333,
+            ),
+          ),
+          Text(
+            orderNumber ?? "",
+            style: GoogleFonts.ptSans(
+              fontSize: Get.height / 65,
+              fontWeight: FontWeight.w600,
+              color: AppColors.color333,
+            ),
+          ),
+        ],
+      ),
       Text(
         "Order Date: ${formatDateFromString(orderDate ?? "")}",
         style: GoogleFonts.ptSans(
@@ -335,13 +413,8 @@ Widget pastOrderWidget(
           color: AppColors.color333,
         ),
       ),
-      Text(
-        "Order Number: ${orderNumber ?? ""}",
-        style: GoogleFonts.ptSans(
-          fontSize: Get.height / 65,
-          fontWeight: FontWeight.w400,
-          color: AppColors.color333,
-        ),
+      SizedBox(
+        height: Get.height * 0.01,
       ),
       Row(
         children: [
