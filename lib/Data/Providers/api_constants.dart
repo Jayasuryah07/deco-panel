@@ -1,4 +1,5 @@
 class ApiConstants {
+
   static String baseUrl = 'https://decopanel.in/public/api/';
   static String imageBaseUrl = 'https://decopanel.in/storage/app/public/';
 

@@ -132,7 +132,7 @@ class LoginScreen extends GetView<LoginController> {
                       webcontroller
                         ..setJavaScriptMode(JavaScriptMode.unrestricted)
                         ..loadRequest(Uri.parse(
-                            "https://decopanel.in/privacypolicy.html"));
+                            "https://decopanel.in/public/privacypolicy"));
                       showDialog(
                         barrierDismissible: false,
                         context: context,
@@ -142,7 +142,7 @@ class LoginScreen extends GetView<LoginController> {
                                 horizontal: Get.width * 0.025),
                             // 95% width
                             titlePadding:
-                                EdgeInsets.only(top: 10, right: 10, bottom: 10),
+                                const EdgeInsets.only(top: 10, right: 10, bottom: 10),
                             title: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
@@ -151,12 +151,12 @@ class LoginScreen extends GetView<LoginController> {
                                     Navigator.pop(context);
                                   },
                                   child: Container(
-                                    padding: EdgeInsets.all(3),
+                                    padding: const EdgeInsets.all(3),
                                     decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         color: AppColors.textBlack
-                                            .withOpacity(0.1)),
-                                    child: Icon(
+                                            .withAlpha(25)),
+                                    child: const Icon(
                                       Icons.close,
                                       color: AppColors.textBlack,
                                     ),
@@ -164,8 +164,8 @@ class LoginScreen extends GetView<LoginController> {
                                 ),
                               ],
                             ),
-                            contentPadding: EdgeInsets.all(0),
-                            content: Container(
+                            contentPadding: const EdgeInsets.all(0),
+                            content: SizedBox(
                               width: Get.width * 0.9,
                               // Adjust the width here
                               height: Get.height * 0.9,
@@ -191,7 +191,7 @@ class LoginScreen extends GetView<LoginController> {
                             backgroundColor: Colors.white,
                             surfaceTintColor: Colors.white,
                             titlePadding:
-                                EdgeInsets.only(top: 10, right: 10, bottom: 0),
+                                const EdgeInsets.only(top: 10, right: 10, bottom: 0),
                             title: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
@@ -200,21 +200,21 @@ class LoginScreen extends GetView<LoginController> {
                                     Navigator.pop(context);
                                   },
                                   child: Container(
-                                      padding: EdgeInsets.all(3),
+                                      padding: const EdgeInsets.all(3),
                                       decoration: BoxDecoration(
                                           shape: BoxShape.circle,
                                           color: AppColors.textBlack
-                                              .withOpacity(0.2)
-                                              .withOpacity(0.5)),
-                                      child: Icon(
+                                              .withAlpha(51)
+                                              .withAlpha(128)),
+                                      child: const Icon(
                                         Icons.close,
                                         color: AppColors.textBlack,
                                       )),
                                 ),
                               ],
                             ),
-                            contentPadding: EdgeInsets.all(0),
-                            content: Container(
+                            contentPadding: const EdgeInsets.all(0),
+                            content: SizedBox(
                               width: 430, // Adjust the width here
                               child: WebViewWidget(controller: webcontroller),
                             ),
@@ -275,6 +275,7 @@ class LoginScreen extends GetView<LoginController> {
                                 controller.isLoading.value = true;
 
                                 // Call your API
+                                if(!context.mounted) return;
                                 final value = await ApiService().mobileApi(
                                   phone: controller.numberController.value.text
                                       .trim(),
@@ -285,7 +286,7 @@ class LoginScreen extends GetView<LoginController> {
                                 if (value['code'] == 200) {
                                   controller.loginPassword.value =
                                       value["data"]['cpassword'] ?? "";
-                                  print(
+                                  debugPrint(
                                       "login password::::::::::: ${controller.loginPassword.value}");
                                   //Get.offAllNamed(RouteConstants.otpScreen,
                                   //    arguments: {
@@ -297,13 +298,13 @@ class LoginScreen extends GetView<LoginController> {
                                     appVerificationDisabledForTesting:
                                         false, // Ensure this is false for production
                                   );
-                                  var token;
+                                  String? token;
                                   if (Platform.isIOS) {
                                     token = await FirebaseMessaging.instance
                                         .getAPNSToken();
                                     debugPrint('APNS Token: $token');
                                   } else {
-                                    var token;
+                                    String? token;
                                     if (Platform.isIOS) {
                                       token = await FirebaseMessaging.instance
                                           .getAPNSToken();
@@ -359,8 +360,8 @@ class LoginScreen extends GetView<LoginController> {
                                           resendToken ?? 0;
                                       otpController.verify.value =
                                           verificationId;
-                                      print("Verify :$verificationId");
-                                      print(
+                                      debugPrint("Verify :$verificationId");
+                                      debugPrint(
                                           "Verify :${otpController.verify.value}");
                                       otpController.update();
 
@@ -390,6 +391,7 @@ class LoginScreen extends GetView<LoginController> {
                                     },
                                   );
                                 } else {
+                                  if(!context.mounted) return;
                                   customToast(
                                     context,
                                     "Failed to send the OTP. Please try again.",
@@ -398,6 +400,7 @@ class LoginScreen extends GetView<LoginController> {
                                 }
                                 controller.isLoading.value = false;
                               } catch (error) {
+                                if(!context.mounted) return;
                                 customToast(
                                   context,
                                   "Error: ${error.toString()}",

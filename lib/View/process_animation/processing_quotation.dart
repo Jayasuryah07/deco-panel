@@ -25,7 +25,7 @@ class ProcessingQuotation extends GetView<PastOrderController> {
             ),
           );
         }
-        return SizedBox.shrink(); // Hide when not loading
+        return const SizedBox.shrink(); // Hide when not loading
       }),
     );
   }

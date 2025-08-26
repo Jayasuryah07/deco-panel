@@ -51,7 +51,7 @@ class CommonButton extends StatelessWidget {
         boxShadow: boxShadow ??
             [
               BoxShadow(
-                color: boxShadowColor ?? Colors.black.withOpacity(0.2),
+                color: boxShadowColor ?? Colors.black.withAlpha(51),
                 blurRadius: 6.0,
                 offset: const Offset(0, 4.0),
               ),
@@ -62,7 +62,7 @@ class CommonButton extends StatelessWidget {
         child: InkWell(
           borderRadius: borderRadius ?? BorderRadius.circular(8.0),
           splashColor: showRippleEffect && isEnabled
-              ? Colors.white.withOpacity(0.2)
+              ? Colors.white.withAlpha(51)
               : Colors.transparent,
           onTap: isEnabled && !isLoading ? onPressed : null,
           child: AnimatedContainer(

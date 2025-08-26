@@ -38,5 +38,5 @@ class AppColors {
   static const Color colorADB = Color(0xFFD9DADB);
   static const Color colorA1E = Color(0xFF171A1E);
   static const Color buttonSplashColor = Color(0xffd9ac85);
-  static Color toastBackGroundColor = Colors.black.withOpacity(0.5);
+  static Color toastBackGroundColor = Colors.black.withAlpha(128);
 }

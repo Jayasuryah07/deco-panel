@@ -38,13 +38,13 @@ class CategoryItemScreen extends GetView<BottomNavController> {
             systemNavigationBarIconBrightness: Brightness.light,
             systemNavigationBarDividerColor: AppColors.whiteColor,
           ),
-          shadowColor: Colors.black.withOpacity(0.4),
+          shadowColor: Colors.black.withAlpha(102),
           flexibleSpace: Container(
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withAlpha(25),
                   // Light shadow color
                   blurRadius: 10.0,
                   // Soften the shadow
@@ -113,7 +113,7 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                       color: AppColors.whiteColor,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withAlpha(25),
                           // Shadow color with opacity
                           spreadRadius: 2,
                           // Spread of the shadow
@@ -177,7 +177,7 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                         itemCount:
                             controller.subCategoryModel.value.data!.length,
                         itemBuilder: (BuildContext context, int index) {
-                          print(
+                          debugPrint(
                             "${ApiConstants.imageBaseUrl}${controller.subCategoryModel.value.data?[index].productSubCategoryImage ?? ""}",
                           );
                           return subCategoryItem(
@@ -254,12 +254,14 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                                 controller.qty.value = 1;
 
                                 // Show the dialog if all lists have data
+                                if(!context.mounted) return;
                                 _showDialog(context, index);
                               } else {
                                 // Dismiss the loading dialog
                                 Get.back();
 
                                 // If any list is empty, show a toast and navigate back
+                                if(!context.mounted) return;
                                 customToast(
                                     context,
                                     'Failed to fetch product data',
@@ -310,13 +312,13 @@ class CategoryItemScreen extends GetView<BottomNavController> {
       String? title,
       required RxBool isLoading,
       void Function()? onTap}) {
-    print(image);
+    debugPrint('$image');
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1), // Shadow color with opacity
+            color: Colors.black.withAlpha(25), // Shadow color with opacity
             spreadRadius: 2, // Spread of the shadow
             blurRadius: 6, // Blur radius of the shadow
             offset: const Offset(0, 4), // Offset for the shadow (bottom only)
@@ -372,9 +374,9 @@ class CategoryItemScreen extends GetView<BottomNavController> {
             borderRadius:
                 BorderRadius.circular(AppSize.displayWidth(context) * 0.015),
             // Match the container radius
-            splashColor: AppColors.buttonColor.withOpacity(0.2),
+            splashColor: AppColors.buttonColor.withAlpha(51),
             // Ripple effect color
-            highlightColor: AppColors.buttonColor.withOpacity(0.1),
+            highlightColor: AppColors.buttonColor.withAlpha(51),
             // Tap highlight
             child: Row(
               children: [
@@ -387,7 +389,7 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                         borderRadius: BorderRadius.all(Radius.circular(
                             AppSize.displayWidth(context) * 0.015)),
                         border: Border.all(color: AppColors.colorF45),
-                        color: AppColors.colorF45.withOpacity(0.2)),
+                        color: AppColors.colorF45.withAlpha(51)),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -483,8 +485,7 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                               label: "Brand",
                               selectedValue: controller.selectedBrand,
                               onChanged: (p0) async {
-                                print(controller
-                                    .selectedBrand.value?.productsBrand);
+                                debugPrint('Brand Selected: ${controller.selectedBrand.value?.productsBrand}');
                                 controller.selectedThick.value =
                                     ThicknessData();
                                 controller.selectedSize.value = SizeData();
@@ -566,7 +567,7 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                                         .toList()
                                         .obs,
                                   )
-                                : SizedBox(),
+                                : const SizedBox(),
                             SizedBox(
                                 height: AppSize.displayHeight(context) * 0.02),
                             controller.sizeList.isNotEmpty
@@ -617,6 +618,7 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                                         controller.thicknessList.clear();
                                         controller.sizeList.clear();
                                         controller.productItemList.clear();
+                                        if(!context.mounted) return;
                                         customToast(
                                             context,
                                             'No Product found for add to cart',
@@ -637,7 +639,7 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                                         .toList()
                                         .obs,
                                   )
-                                : SizedBox(),
+                                : const SizedBox(),
                             SizedBox(
                                 height: AppSize.displayHeight(context) * 0.02),
                             QuantityPicker(

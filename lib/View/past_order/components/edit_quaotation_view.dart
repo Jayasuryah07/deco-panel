@@ -22,7 +22,7 @@ class EditQuotationView extends GetView<PastOrderController> {
         backgroundColor: Colors.white,
         elevation: 0.2,
         surfaceTintColor: Colors.transparent,
-        shadowColor: Colors.black.withOpacity(0.4),
+        shadowColor: Colors.black.withAlpha(102),
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: AppColors.color42B,
           statusBarIconBrightness: Brightness.light,
@@ -36,7 +36,7 @@ class EditQuotationView extends GetView<PastOrderController> {
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withAlpha(25),
                 // Light shadow color
                 blurRadius: 10.0,
                 // Soften the shadow
@@ -110,14 +110,12 @@ class EditQuotationView extends GetView<PastOrderController> {
                             controller.quotationModel.value.quotationSub![index]
                                 .quotationSubQuantity = val;
 
-                            print(controller.quotationModel.value
-                                .quotationSub![index].quotationSubQuantity);
+                            debugPrint('${controller.quotationModel.value.quotationSub![index].quotationSubQuantity}');
                           },
                           onQty2ValueChanged: (val) async {
                             controller.quotationModel.value.quotationSub![index]
                                 .quotationSubRate = val.toDouble();
-                            print(controller.quotationModel.value
-                                .quotationSub![index].quotationSubRate);
+                            debugPrint('${controller.quotationModel.value.quotationSub![index].quotationSubRate}');
                           },
                           networkImage:
                               "${ApiConstants.imageBaseUrl}${controller.quotationModel.value.quotationSub![index].productCategoryImage?.toString() ?? ""}",
@@ -179,8 +177,8 @@ class EditQuotationView extends GetView<PastOrderController> {
                     int i = controller.quotationModel.value.quotationSub!
                             .indexOf(item) +
                         1;
-                    print(i);
-                    print(controller.quotationModel.value.quotationSub!.length);
+                    debugPrint('Index: $i');
+                    debugPrint('${controller.quotationModel.value.quotationSub!.length}');
                     await OrderApiService().updateQuotationApiUrl(
                         loading: controller.updateQuoLoading,
                         isDone: i ==

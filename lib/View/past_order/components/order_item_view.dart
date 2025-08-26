@@ -21,7 +21,7 @@ class OrderItemViewScreen extends GetView<PastOrderController> {
         backgroundColor: Colors.white,
         elevation: 0.2,
         surfaceTintColor: Colors.transparent,
-        shadowColor: Colors.black.withOpacity(0.4),
+        shadowColor: Colors.black.withAlpha(102),
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: AppColors.color42B,
           statusBarIconBrightness: Brightness.light,
@@ -35,7 +35,7 @@ class OrderItemViewScreen extends GetView<PastOrderController> {
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1), // Light shadow color
+                color: Colors.black.withAlpha(25), // Light shadow color
                 blurRadius: 10.0, // Soften the shadow
                 offset: const Offset(0, 4), // Shadow appears below the AppBar
               ),
@@ -140,8 +140,7 @@ class OrderItemViewScreen extends GetView<PastOrderController> {
                             padding: const EdgeInsets.symmetric(
                                 vertical: defaultPadding / 2),
                             itemBuilder: (context, index) {
-                              print(controller.orderItemModel.value
-                                  .orderSub![index].ordersSubProduct);
+                              debugPrint('${controller.orderItemModel.value.orderSub![index].productSubCategory}');
                               return Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: defaultPadding,
@@ -150,7 +149,7 @@ class OrderItemViewScreen extends GetView<PastOrderController> {
                                   color: AppColors.whiteColor,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
+                                      color: Colors.black.withAlpha(25),
                                       // Light shadow color
                                       blurRadius: 10.0,
                                       // Soften the shadow
@@ -246,7 +245,7 @@ class OrderItemViewScreen extends GetView<PastOrderController> {
                                           vertical: defaultPadding / 10),
                                       decoration: BoxDecoration(
                                         color:
-                                            AppColors.colorF45.withOpacity(0.2),
+                                            AppColors.colorF45.withAlpha(51),
                                         borderRadius: const BorderRadius.all(
                                           Radius.circular(defaultRadius / 2),
                                         ),
@@ -308,20 +307,20 @@ class OrderItemViewScreen extends GetView<PastOrderController> {
       DateTime date = DateTime.parse(inputDate);
 
       // List of month abbreviations
-      const List<String> months = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec"
-      ];
+      // const List<String> months = [
+      //   "Jan",
+      //   "Feb",
+      //   "Mar",
+      //   "Apr",
+      //   "May",
+      //   "Jun",
+      //   "Jul",
+      //   "Aug",
+      //   "Sep",
+      //   "Oct",
+      //   "Nov",
+      //   "Dec"
+      // ];
 
       // Format the date
       String formattedDate = "${date.day}-${date.month}-${date.year}";

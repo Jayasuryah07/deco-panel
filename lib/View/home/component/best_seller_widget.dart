@@ -28,7 +28,7 @@ class BestSellerWidget extends StatelessWidget {
             Radius.circular(AppSize.displayWidth(context) * 0.02)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.colorF45.withOpacity(0.1), // Light shadow color
+            color: AppColors.colorF45.withAlpha(25), // Light shadow color
             offset: const Offset(0, 4), // Horizontal and vertical offset
             blurRadius: 6, // Softness of the shadow
             spreadRadius: 1, // How much the shadow expands
@@ -98,7 +98,7 @@ class BestSellerWidget extends StatelessWidget {
                                     ),
                                   ),
                                   border: Border.all(color: AppColors.colorF45),
-                                  color: AppColors.colorF45.withOpacity(0.2),
+                                  color: AppColors.colorF45.withAlpha(51),
                                 ),
                                 child: Row(
                                   children: [
@@ -142,7 +142,7 @@ Widget getOrderNow(BuildContext context) {
         borderRadius: BorderRadius.all(
             Radius.circular(AppSize.displayWidth(context) * 0.015)),
         border: Border.all(color: AppColors.colorF45),
-        color: AppColors.colorF45.withOpacity(0.2)),
+        color: AppColors.colorF45.withAlpha(51)),
     child: Row(
       children: [
         Image.asset(

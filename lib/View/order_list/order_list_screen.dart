@@ -54,7 +54,7 @@ class OrderListScreen extends GetView<PastOrderController> {
                         },
                         initialValue: controller.cartList[index].cartQuantity,
                         onQtyValueChanged: (val) async {
-                          print(val);
+                          debugPrint('onQtyValueChanged: $val');
                           await OrderApiService().updateCartApiUrl(
                               loading: controller.updateCartLoading,
                               context: context,

@@ -96,7 +96,7 @@ class MyCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(51),
             spreadRadius: 2,
             blurRadius: 8,
             offset: const Offset(0, 4),

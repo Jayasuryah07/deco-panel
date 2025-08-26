@@ -282,7 +282,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                         onTap: () {
                           Get.back();
                         },
-                        child: Icon(CupertinoIcons.clear_circled_solid))
+                        child: const Icon(CupertinoIcons.clear_circled_solid))
                   ],
                 ),
                 SizedBox(height: height * 0.02),

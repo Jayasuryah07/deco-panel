@@ -423,7 +423,7 @@ Widget pastOrderWidget(
             padding: EdgeInsets.symmetric(
                 horizontal: AppSize.displayWidth(context) * 0.04),
             decoration: BoxDecoration(
-              color: AppColors.color419.withOpacity(0.25),
+              color: AppColors.color419.withAlpha(51),
               borderRadius: const BorderRadius.all(
                 Radius.circular(defaultRadius / 5),
               ),

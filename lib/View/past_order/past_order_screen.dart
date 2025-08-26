@@ -119,7 +119,7 @@ class PastOrderScreen extends GetView<PastOrderController> {
             ),
             Expanded(
               child: TabBarView(
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 controller: controller.tabController.value,
                 children: [
                   orderListView(context,

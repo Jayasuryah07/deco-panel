@@ -44,7 +44,7 @@ class _SplashScreenState extends State<SplashScreen> {
         }
       }
     } catch (e) {
-      print("Error checking for updates: $e");
+      debugPrint("Error checking for updates: $e");
     }
   }
 
@@ -53,9 +53,9 @@ class _SplashScreenState extends State<SplashScreen> {
     try {
       await InAppUpdate.startFlexibleUpdate();
       await InAppUpdate.completeFlexibleUpdate();
-      print("Update installed successfully.");
+      debugPrint("Update installed successfully.");
     } catch (e) {
-      print("Error during update: $e");
+      debugPrint("Error during update: $e");
     }
   }
 
@@ -76,7 +76,7 @@ class _SplashScreenState extends State<SplashScreen> {
     }
 
     if (token.isNotEmpty && userDetails.data != null) {
-      var firebaseToken;
+      String? firebaseToken;
       if (Platform.isIOS) {
         firebaseToken = await FirebaseMessaging.instance.getAPNSToken();
         debugPrint('APNS Token: $token');
@@ -85,9 +85,10 @@ class _SplashScreenState extends State<SplashScreen> {
         firebaseToken = await messaging.getToken();
         debugPrint('APNS Token: $token');
       }
+      if(!mounted) return;
       await ApiService().loginApi(
         phone: userDetails.data?.user?.mobile ?? "",
-        context: context,
+        context: this.context,
         loading: otpController.isLoading,
         password: userDetails.data?.user?.cpassword ?? "",
         deviceId: firebaseToken ?? "",

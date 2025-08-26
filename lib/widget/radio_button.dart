@@ -28,7 +28,7 @@ class RadioButtonWithSplash extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(50.0),
-      splashColor: Colors.blue.withOpacity(0.2),
+      splashColor: Colors.blue.withAlpha(51),
       //onTap: () => onChanged(!isSelected),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -108,7 +108,7 @@ class MshCheckboxState extends State<MshCheckbox> {
   Widget build(BuildContext context) {
     return InkWell(
       splashFactory: InkSparkle.splashFactory,
-      splashColor: Colors.blue.withOpacity(0.2),
+      splashColor: Colors.blue.withAlpha(51),
       // Customize splash color
       onTap: () {
         // Toggle the checkbox state on tap

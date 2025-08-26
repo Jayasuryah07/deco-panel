@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:deco_flutter_app/Data/Services/api_service.dart';
 import 'package:deco_flutter_app/Util/Constant/app_colors.dart';
 import 'package:deco_flutter_app/Util/Constant/app_images.dart';
@@ -57,8 +55,8 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
 
   @override
   Widget build(BuildContext context) {
-    log(token);
-    print(userDetails.data?.user?.userTypeId);
+    debugPrint('token: $token');
+    debugPrint('User Type: ${userDetails.data?.user?.userTypeId}');
     return Obx(
       () => WillPopScope(
         onWillPop: () async {
@@ -93,14 +91,14 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
             ),
             elevation: 0.2,
             surfaceTintColor: Colors.transparent,
-            shadowColor: Colors.black.withOpacity(0.4),
+            shadowColor: Colors.black.withAlpha(102),
             flexibleSpace: Container(
                 decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
                   color: controller.selectedIndex.value != 1
-                      ? Colors.black.withOpacity(0.1)
+                      ? Colors.black.withAlpha(13)
                       : Colors.transparent,
                   // Light shadow color
                   blurRadius: 10.0,
@@ -174,7 +172,7 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withAlpha(13),
                     // Light shadow color
                     blurRadius: 10.0,
                     // Soften the shadow
@@ -212,7 +210,7 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
                                     decoration: BoxDecoration(
                                       color: controller.selectedIndex.value !=
                                               index
-                                          ? AppColors.color333.withOpacity(0.6)
+                                            ? AppColors.color333.withAlpha(153)
                                           : AppColors.buttonColor,
                                       shape: BoxShape.circle,
                                     ),
@@ -227,7 +225,7 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
                                   ),
                                 ),
                               )
-                            : SizedBox(),
+                            : const SizedBox(),
                       ],
                     ),
                     label: titles[index],

@@ -19,7 +19,7 @@ class AboutUsScreen extends GetView<FeedbackController> {
         backgroundColor: Colors.white,
         elevation: 0.2,
         surfaceTintColor: Colors.transparent,
-        shadowColor: Colors.black.withOpacity(0.4),
+        shadowColor: Colors.black.withAlpha(102),
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: AppColors.color42B,
           statusBarIconBrightness: Brightness.light,
@@ -33,7 +33,7 @@ class AboutUsScreen extends GetView<FeedbackController> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1), // Light shadow color
+              color: Colors.black.withAlpha(25), // Light shadow color
               blurRadius: 10.0, // Soften the shadow
               offset: const Offset(0, 4), // Shadow appears below the AppBar
             ),
@@ -64,7 +64,7 @@ class AboutUsScreen extends GetView<FeedbackController> {
             horizontal: AppSize.displayWidth(context) * 0.04),
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Image.asset(
@@ -72,7 +72,7 @@ class AboutUsScreen extends GetView<FeedbackController> {
               height: 200,
               width: 200,
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             /* Container(

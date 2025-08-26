@@ -13,7 +13,7 @@ import '../../View/auth/login_screen.dart';
 import 'network_connectivity.dart';
 
 class NoInternetScreen extends StatefulWidget {
-  const NoInternetScreen({Key? key}) : super(key: key);
+  const NoInternetScreen({super.key});
 
   @override
   State<NoInternetScreen> createState() => _NoInternetScreenState();
@@ -36,7 +36,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
     setState(() => isChecking = true);
 
     if (await NetworkConnectivity.checkInternet()) {
-      print("Internet connection found");
+      debugPrint("Internet connection found");
       await ApiService().getdata();
       token = (await SessionManager().getAuthToken()) ?? "";
 
@@ -48,7 +48,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
       }
 
       if (token.isNotEmpty && userDetails.data != null) {
-        var firebaseToken;
+        String? firebaseToken;
         if (Platform.isIOS) {
           firebaseToken = await FirebaseMessaging.instance.getAPNSToken();
           debugPrint('APNS Token: $token');
@@ -57,6 +57,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
           firebaseToken = await messaging.getToken();
           debugPrint('APNS Token: $token');
         }
+        if(!mounted) return;
         await ApiService().loginApi(
           phone: userDetails.data?.user?.mobile ?? "",
           context: context,
@@ -76,7 +77,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
         return;
       }
     } else {
-      print("Internet connection ::::::::not:::::::::: found");
+      debugPrint("Internet connection ::::::::not:::::::::: found");
       setState(() => isChecking = false);
     }
   }

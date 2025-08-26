@@ -132,7 +132,7 @@ class AppStyle {
   static TextStyle hintTextMedium12 = GoogleFonts.poppins(
       fontSize: 12.0,
       fontWeight: FontWeight.w400,
-      color: AppColors.textHint.withOpacity(0.5));
+      color: AppColors.textHint.withAlpha(128));
   static TextStyle textFieldSemiBold14 = GoogleFonts.poppins(
       fontSize: 14.0, fontWeight: FontWeight.w600, color: AppColors.textHint);
   static TextStyle textFieldRegular14 = GoogleFonts.poppins(

@@ -105,7 +105,7 @@ class _OtpScreenState extends State<OtpScreen> {
         Get.arguments != null && Get.arguments["no"] != null
             ? Get.arguments["no"]
             : "";
-    print("Verify number ${loginController.numberController.value.text}");
+    debugPrint("Verify number: ${loginController.numberController.value.text}");
     await loginController.auth
         .setSettings(appVerificationDisabledForTesting: true);
     await FirebaseAuth.instance.verifyPhoneNumber(
@@ -118,14 +118,14 @@ class _OtpScreenState extends State<OtpScreen> {
         await loginController.auth.signInWithCredential(credential);
       },
       verificationFailed: (FirebaseAuthException e) async {
-        print('fError : ${e.code},${e.message}');
+        debugPrint('fError : ${e.code},${e.message}');
         if (e.code == 'invalid-phone-number') {
           // mobileNumberController.isButtonLoading.value =
           // false;
           customToast(context, "The provided phone number is not valid.",
               ToastType.warning);
 
-          print('The provided phone number is not valid.');
+          debugPrint('The provided phone number is not valid.');
         } else if (e.code == 'too-many-requests') {
           // mobileNumberController.isButtonLoading.value =
           // false;
@@ -374,7 +374,7 @@ class _OtpScreenState extends State<OtpScreen> {
                         isEnabled: /*otpController.isAble.value*/ true,
                         onPressed: () async {
                           FocusScope.of(context).unfocus();
-                          print(otpController.verify.value);
+                          debugPrint('otpController: ${otpController.verify.value}');
                           if (otpFormKey.currentState!.validate()) {
                             try {
                               if (!(await NetworkConnectivity
@@ -388,17 +388,18 @@ class _OtpScreenState extends State<OtpScreen> {
                                 return;
                               }
                               otpController.isLoading.value = true;
-                              PhoneAuthCredential credential =
-                                  PhoneAuthProvider.credential(
-                                verificationId: otpController.verify.value,
-                                smsCode: otpController.otpController.value.text,
-                              );
+                              // PhoneAuthCredential credential =
+                              //     PhoneAuthProvider.credential(
+                              //   verificationId: otpController.verify.value,
+                              //   smsCode: otpController.otpController.value.text,
+                              // );
 
-                              print(
+                              debugPrint(
                                   "login password::::::::::: ${Get.arguments != null && Get.arguments["password"] != null ? Get.arguments["password"] : ""}");
-                              print(
+                              debugPrint(
                                   "login deviceId::::::::::: ${Get.arguments != null && Get.arguments["deviceId"] != null ? Get.arguments["deviceId"] : ""}");
                               // controller.postCheckMobileApi({"mobile": mobileNumberController.mobileNumberController.value.text.trim()});
+                              if(!context.mounted) return;
                               await ApiService().loginApi(
                                 password: Get.arguments != null &&
                                         Get.arguments["password"] != null
@@ -423,12 +424,14 @@ class _OtpScreenState extends State<OtpScreen> {
                                   false; // Stop the loader in case of an error
 
                               if (error.code == 'invalid-verification-code') {
+                                if(!context.mounted) return;
                                 customToast(
                                   context,
                                   "Invalid OTP",
                                   ToastType.warning,
                                 );
                               } else {
+                                if(!context.mounted) return;
                                 customToast(
                                   context,
                                   "Error: ${"Something went wrong"}",
@@ -438,12 +441,13 @@ class _OtpScreenState extends State<OtpScreen> {
                               otpController.isLoading.value =
                                   false; // Stop the loader in case of an error
                             } catch (e) {
+                              if(!context.mounted) return;
                               customToast(
                                 context,
-                                "Error: ${e}",
+                                "Error: $e",
                                 ToastType.error,
                               );
-                              print("error >>>>>>>>>>>>> $e");
+                              debugPrint("error >>>>>>>>>>>>> $e");
                               otpController.isLoading.value =
                                   false; // Ensure the loader is stopped
                             }

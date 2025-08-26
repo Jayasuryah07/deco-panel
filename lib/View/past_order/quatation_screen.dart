@@ -20,7 +20,7 @@ class QuotationView extends GetView<PastOrderController> {
         backgroundColor: Colors.white,
         elevation: 0.2,
         surfaceTintColor: Colors.transparent,
-        shadowColor: Colors.black.withOpacity(0.4),
+        shadowColor: Colors.black.withAlpha(102),
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: AppColors.color42B,
           statusBarIconBrightness: Brightness.light,
@@ -34,7 +34,7 @@ class QuotationView extends GetView<PastOrderController> {
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withAlpha(25),
                 // Light shadow color
                 blurRadius: 10.0,
                 // Soften the shadow
@@ -244,20 +244,20 @@ String formatDateFromString(String inputDate) {
     DateTime date = DateTime.parse(inputDate);
 
     // List of month abbreviations
-    const List<String> months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec"
-    ];
+    // const List<String> months = [
+    //   "Jan",
+    //   "Feb",
+    //   "Mar",
+    //   "Apr",
+    //   "May",
+    //   "Jun",
+    //   "Jul",
+    //   "Aug",
+    //   "Sep",
+    //   "Oct",
+    //   "Nov",
+    //   "Dec"
+    // ];
 
     // Format the date
     String formattedDate = "${date.day} ${date.month} ${date.year}";

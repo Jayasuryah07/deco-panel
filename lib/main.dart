@@ -40,7 +40,7 @@ Future<void> main() async {
   }
   await FirebaseMessaging.instance.requestPermission();
 
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: AppColors.color42B,
     // Background color of status bar
     statusBarIconBrightness: Brightness.light,
@@ -67,8 +67,9 @@ class MyApp extends StatelessWidget {
       title: 'DecoApp',
       color: Colors.white,
       theme: ThemeData(
-        colorScheme:
-            const ColorScheme.highContrastLight(background: Colors.white),
+        colorScheme: const ColorScheme.highContrastLight(
+          surface: Colors.white, // ✅ replace background with surface
+        ),
         useMaterial3: true,
       ),
       initialRoute: RouteConstants.splashScreen,

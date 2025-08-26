@@ -53,7 +53,7 @@ class CategoryItemWidget extends StatelessWidget {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05), // Lighter shadow color
+                  color: Colors.black.withAlpha(15), // Lighter shadow color
                   spreadRadius: 1, // Minimal spread for a subtle effect
                   blurRadius: 4, // Slight blur for softness
                   offset:
@@ -61,7 +61,7 @@ class CategoryItemWidget extends StatelessWidget {
                 ),
                 if (isSelected) // Add an extra shadow effect when selected
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.3),
+                    color: Colors.grey.withAlpha(77),
                     blurRadius: 10,
                     spreadRadius: 2,
                   ),

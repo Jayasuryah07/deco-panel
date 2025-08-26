@@ -23,7 +23,7 @@ class FeedBackScreen extends GetView<FeedbackController> {
           backgroundColor: Colors.white,
           elevation: 0.2,
           surfaceTintColor: Colors.transparent,
-          shadowColor: Colors.black.withOpacity(0.4),
+          shadowColor: Colors.black.withAlpha(102),
           systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarColor: AppColors.color42B,
             statusBarIconBrightness: Brightness.light,
@@ -37,7 +37,7 @@ class FeedBackScreen extends GetView<FeedbackController> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withAlpha(25),
                   // Light shadow color
                   blurRadius: 10.0,
                   // Soften the shadow
@@ -98,7 +98,7 @@ class FeedBackScreen extends GetView<FeedbackController> {
                     maxLength: 50,
                     // Set input type to number
                     validator: (val) {
-                      if (val == null || val!.trim().isEmpty) {
+                      if (val == null || val.trim().isEmpty) {
                         return 'Please enter title for feedback';
                       }
                       return null;
@@ -123,7 +123,7 @@ class FeedBackScreen extends GetView<FeedbackController> {
                     keyboardType: TextInputType.text,
                     // Set input type to number
                     validator: (val) {
-                      if (val == null || val!.trim().isEmpty) {
+                      if (val == null || val.trim().isEmpty) {
                         return 'Please enter Description for feedback';
                       }
                       return null;

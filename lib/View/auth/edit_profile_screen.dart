@@ -88,7 +88,7 @@ class EditProfileScreen extends GetView<LoginController> {
                 controller.isAbleFun2();
               },
               validator: (value) {
-                if (value == null || value!.trim().isEmpty) {
+                if (value == null || value.trim().isEmpty) {
                   return "Please enter your name";
                 }
                 return null;
@@ -106,7 +106,7 @@ class EditProfileScreen extends GetView<LoginController> {
                 controller.isAbleFun2();
               },
               validator: (value) {
-                if (value == null || value!.trim().isEmpty) {
+                if (value == null || value.trim().isEmpty) {
                   return "Please enter your number";
                 } else if (value.length != 10) {
                   return "Please enter valid number";
@@ -124,7 +124,7 @@ class EditProfileScreen extends GetView<LoginController> {
                 controller.isAbleFun2();
               },
               validator: (value) {
-                if (value == null || value!.trim().isEmpty) {
+                if (value == null || value.trim().isEmpty) {
                   return "Please enter your number";
                 }
                 return null;
@@ -141,7 +141,7 @@ class EditProfileScreen extends GetView<LoginController> {
                 controller.isAbleFun2();
               },
               validator: (value) {
-                if (value == null || value!.trim().isEmpty) {
+                if (value == null || value.trim().isEmpty) {
                   return "Please enter your area";
                 }
                 return null;
@@ -173,10 +173,10 @@ class EditProfileScreen extends GetView<LoginController> {
                   ),
                 ),
                 itemBuilder: (context) => [
-                  PopupMenuItem(
+                  const PopupMenuItem(
                     value: ImageSource.camera,
                     child: Row(
-                      children: const [
+                      children: [
                         Icon(Icons.camera_alt, size: 20),
                         SizedBox(width: 10),
                         Text("Camera"),
@@ -219,6 +219,7 @@ class EditProfileScreen extends GetView<LoginController> {
                           );
                           return;
                         }
+                        if(!context.mounted) return;
                         await ApiService()
                             .updateUserApiUrl(
                           context: context,
@@ -237,7 +238,7 @@ class EditProfileScreen extends GetView<LoginController> {
                                 appVerificationDisabledForTesting:
                                     false, // Ensure this is false for production
                               );
-                              var firebaseToken;
+                              String? firebaseToken;
                               if (Platform.isIOS) {
                                 firebaseToken = await FirebaseMessaging.instance
                                     .getAPNSToken();
@@ -318,6 +319,7 @@ class EditProfileScreen extends GetView<LoginController> {
                                 },
                               );
                             } else {
+                              if(!context.mounted) return;
                               customToast(
                                 context,
                                 value['msg'] ?? "",

@@ -21,7 +21,7 @@ class CommonNetworkImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FadeInImage(
-      placeholder: NetworkImage(""),
+      placeholder: const NetworkImage(""),
       // Placeholder image
       image: NetworkImage(imageUrl ?? ""),
       // Network image

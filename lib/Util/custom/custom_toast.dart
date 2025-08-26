@@ -24,7 +24,7 @@ void customToast(BuildContext context, String msg, ToastType type) {
       margin: const EdgeInsets.only(bottom: 50),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.7),
+        color: Colors.black.withAlpha(179),
         // Semi-transparent black background
         borderRadius: BorderRadius.circular(8),
       ),

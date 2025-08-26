@@ -124,7 +124,7 @@ class HomeScreen extends GetView<BottomNavController> {
 Future<void> postDeleteProfileApi(BuildContext context) async {
   try {
     final token = (await SessionManager().getAuthToken()) ?? "";
-    print(Uri.parse(ApiConstants.deleteProfile));
+    debugPrint('${Uri.parse(ApiConstants.deleteProfile)}');
     final request = http.MultipartRequest(
       'POST',
       Uri.parse(ApiConstants.deleteProfile),
@@ -140,6 +140,7 @@ Future<void> postDeleteProfileApi(BuildContext context) async {
     debugPrint("Post delete profile response: $responseData");
     if (responseDone.statusCode == 200) {
       if (responseData['code'] == 200) {
+        if(!context.mounted) return;
         customToast(context, responseData['msg'] ?? "Deleted successfully",
             ToastType.success);
 
@@ -148,13 +149,16 @@ Future<void> postDeleteProfileApi(BuildContext context) async {
         await prefs.clear();
         Get.offAllNamed(RouteConstants.loginScreen);
       } else {
+        if(!context.mounted) return;
         customToast(context, responseData['msg'] ?? "Something went wrong",
             ToastType.warning);
       }
     } else {
+      if(!context.mounted) return;
       customToast(context, "Something went wrong", ToastType.warning);
     }
   } catch (e) {
+    if(!context.mounted) return;
     customToast(context, "Something went wrong", ToastType.warning);
     debugPrint("Error deleting profile: $e");
   }

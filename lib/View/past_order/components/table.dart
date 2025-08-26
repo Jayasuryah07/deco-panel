@@ -136,7 +136,7 @@ class DynamicTable extends StatelessWidget {
   }
 }
 
-Future<void> generateAndSharePDF(BuildContext context, List<QuotationSub> datas,
+Future<void> generateAndSharePDF(BuildContext context, List<QuotationSub> quotationSubDataList,
     List<String> headers, String total) async {
   final pdf = pw.Document();
 
@@ -180,7 +180,7 @@ Future<void> generateAndSharePDF(BuildContext context, List<QuotationSub> datas,
                   }).toList(),
                 ),
                 // Data Rows
-                ...datas.map((row) {
+                ...quotationSubDataList.map((row) {
                   return pw.TableRow(
                     children: [
                       _buildPdfCell(
@@ -225,7 +225,9 @@ Future<void> generateAndSharePDF(BuildContext context, List<QuotationSub> datas,
         path.delete();
       }
     });
-  } catch (e) {}
+  } catch (e) {
+    debugPrint("Error: $e");
+  }
 }
 
 // Helper method to build PDF cells

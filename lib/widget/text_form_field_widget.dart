@@ -83,7 +83,7 @@ class CommonTextField extends StatelessWidget {
         suffixIcon: suffixIcon,
         counter: null,
         counterText: counterText,
-        fillColor: fillColor ?? AppColors.colorF91.withOpacity(0.15),
+        fillColor: fillColor ?? AppColors.colorF91.withAlpha(25),
         filled: true,
         hintStyle: hintStyle ??
             AppStyle.textStyleMedium16(fontColor: AppColors.hintColor),
@@ -300,7 +300,7 @@ class CustomRoundedTextField extends StatelessWidget {
         ),
         floatingLabelAlignment: FloatingLabelAlignment.start,
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        fillColor: fillColor ?? AppColors.colorF91.withOpacity(0.15),
+        fillColor: fillColor ?? AppColors.colorF91.withAlpha(25),
         filled: false,
         hintStyle: hintStyle ??
             GoogleFonts.poppins(
