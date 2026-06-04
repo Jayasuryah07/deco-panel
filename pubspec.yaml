@@ -2,7 +2,7 @@ name: deco_flutter_app
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.9+9
+version: 10.0.0+10
 
 environment:
   sdk: '>=3.3.4 <4.0.0'
@@ -13,7 +13,7 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   win32: ^5.5.3
-  google_fonts: ^6.2.1
+  google_fonts: ^6.3.2
   pinput: ^5.0.0
   get: ^4.6.6
   carousel_slider: ^5.0.0

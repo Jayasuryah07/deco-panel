@@ -17,20 +17,20 @@ import '../profile/profile_screen.dart';
 import '../quotation/current_quotation_screen.dart';
 
 class AnimatedBottomNavBar extends GetView<BottomNavController> {
-  final List<dynamic> icons = [
-    if (userType == 1) AppImages.homeIcon,
-    AppImages.orderListIcon,
-    if (userType == 1) AppImages.cartIcon,
-    if (userType != 1) AppImages.quotationIcon,
-    AppImages.profileIcon,
+  final List<IconData> icons = [
+    if (userType == 1) Icons.home_outlined,
+    Icons.list_alt_outlined,
+    if (userType == 1) Icons.shopping_cart_outlined,
+    if (userType != 1) Icons.description_outlined,
+    Icons.person_outline,
   ];
 
-  final List<dynamic> selectedIcons = [
-    if (userType == 1) AppImages.homeSeIcon,
-    AppImages.orderListFillIcon,
-    if (userType == 1) AppImages.cartIcon,
-    if (userType != 1) AppImages.quotationIcon,
-    AppImages.profileFillIcon,
+  final List<IconData> selectedIcons = [
+    if (userType == 1) Icons.home_rounded,
+    Icons.list_alt_rounded,
+    if (userType == 1) Icons.shopping_cart_rounded,
+    if (userType != 1) Icons.description_rounded,
+    Icons.person_rounded,
   ];
 
   final List<String> titles = [
@@ -50,8 +50,6 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
   ];
 
   AnimatedBottomNavBar({super.key});
-
-  // Define the GlobalKey for the Scaffold
 
   @override
   Widget build(BuildContext context) {
@@ -75,9 +73,7 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
         },
         child: Scaffold(
           key: controller.drawerKey,
-          // Assign the scaffold key to the Scaffold widget
           drawerEnableOpenDragGesture: true,
-          // Set to true to allow swipe gestures
           drawer: const DrawerWidget(),
           appBar: AppBar(
             backgroundColor: Colors.white,
@@ -93,25 +89,23 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
             surfaceTintColor: Colors.transparent,
             shadowColor: Colors.black.withAlpha(102),
             flexibleSpace: Container(
-                decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: controller.selectedIndex.value != 1
-                      ? Colors.black.withAlpha(13)
-                      : Colors.transparent,
-                  // Light shadow color
-                  blurRadius: 10.0,
-                  // Soften the shadow
-                  offset: const Offset(0, 4), // Shadow appears below the AppBar
-                ),
-              ],
-            )),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: controller.selectedIndex.value != 1
+                        ? Colors.black.withAlpha(13)
+                        : Colors.transparent,
+                    blurRadius: 10.0,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+            ),
             leading: IconButton(
               icon: const Icon(Icons.menu_rounded),
               onPressed: () {
-                controller.drawerKey.currentState
-                    ?.openDrawer(); // Use openDrawer to open the left drawer
+                controller.drawerKey.currentState?.openDrawer();
               },
             ),
             actions: [
@@ -121,11 +115,11 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
                     IconButton(
                       onPressed: () {
                         controller.changeIndex(2);
-                        // Your onPressed action
                       },
-                      icon: Image.asset(
-                        AppImages.cartIcon,
-                        height: AppSize.displayHeight(context) * 0.025,
+                      icon: Icon(
+                        Icons.shopping_cart_outlined,
+                        size: AppSize.displayHeight(context) * 0.028,
+                        color: AppColors.color333,
                       ),
                     ),
                     Obx(
@@ -139,10 +133,10 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
                             shape: BoxShape.circle,
                           ),
                           child: Text(
-                            '${Get.find<PastOrderController>().cartList.length}', // Observed count
+                            '${Get.find<PastOrderController>().cartList.length}',
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 12,
+                              fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -167,17 +161,15 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
           bottomNavigationBar: Obx(
             () => Container(
               padding: EdgeInsets.symmetric(
-                  vertical: AppSize.displayHeight(context) * 0.005),
+                vertical: AppSize.displayHeight(context) * 0.005,
+              ),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withAlpha(13),
-                    // Light shadow color
                     blurRadius: 10.0,
-                    // Soften the shadow
-                    offset:
-                        const Offset(0, -4), // Shadow appears above the button
+                    offset: const Offset(0, -4),
                   ),
                 ],
               ),
@@ -188,44 +180,50 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
                 unselectedItemColor: Colors.grey,
                 elevation: 0,
                 onTap: controller.changeIndex,
+                selectedLabelStyle: GoogleFonts.roboto(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+                unselectedLabelStyle: GoogleFonts.roboto(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
                 items: List.generate(userType == 1 ? 4 : 3, (index) {
                   return BottomNavigationBarItem(
                     icon: Stack(
                       clipBehavior: Clip.none,
                       alignment: Alignment.center,
                       children: [
-                        AnimatedIconOrImageWidget(
+                        AnimatedIconWidget(
                           iconData: controller.selectedIndex.value == index
                               ? selectedIcons[index]
                               : icons[index],
                           isSelected: controller.selectedIndex.value == index,
                         ),
-                        index == 2 && userType == 1
-                            ? Obx(
-                                () => Positioned(
-                                  right: -7,
-                                  top: -9,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(5),
-                                    decoration: BoxDecoration(
-                                      color: controller.selectedIndex.value !=
-                                              index
-                                            ? AppColors.color333.withAlpha(153)
-                                          : AppColors.buttonColor,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Text(
-                                      '${Get.find<PastOrderController>().cartList.length}', // Observed count
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
+                        if (index == 2 && userType == 1)
+                          Obx(
+                            () => Positioned(
+                              right: -7,
+                              top: -9,
+                              child: Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  color: controller.selectedIndex.value != index
+                                      ? AppColors.color333.withAlpha(153)
+                                      : AppColors.buttonColor,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Text(
+                                  '${Get.find<PastOrderController>().cartList.length}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              )
-                            : const SizedBox(),
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                     label: titles[index],
@@ -240,70 +238,73 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
   }
 }
 
-class AnimatedIconOrImageWidget extends StatefulWidget {
-  final dynamic iconData; // Can be either IconData or Image path (String)
+class AnimatedIconWidget extends StatefulWidget {
+  final IconData iconData;
   final bool isSelected;
 
-  const AnimatedIconOrImageWidget({
+  const AnimatedIconWidget({
     super.key,
     required this.iconData,
     required this.isSelected,
   });
 
   @override
-  AnimatedIconOrImageWidgetState createState() =>
-      AnimatedIconOrImageWidgetState();
+  AnimatedIconWidgetState createState() => AnimatedIconWidgetState();
 }
 
-class AnimatedIconOrImageWidgetState extends State<AnimatedIconOrImageWidget>
+class AnimatedIconWidgetState extends State<AnimatedIconWidget>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _colorAnimation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 300),
     );
+    
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
+    );
+    
+    _colorAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+    
     if (widget.isSelected) {
       _controller.forward();
     }
   }
 
   @override
-  void didUpdateWidget(covariant AnimatedIconOrImageWidget oldWidget) {
+  void didUpdateWidget(covariant AnimatedIconWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.isSelected) {
+    if (widget.isSelected && !oldWidget.isSelected) {
       _controller.forward();
-    } else {
+    } else if (!widget.isSelected && oldWidget.isSelected) {
       _controller.reverse();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedScale(
-      scale: widget.isSelected ? 1.2 : 1.0, // Animate scale for selection
-      duration: const Duration(milliseconds: 300),
-      child: widget.iconData is IconData
-          ? Icon(
-              widget.iconData,
-              size: AppSize.displayHeight(context) * 0.03, // Set the icon size
-              color: widget.isSelected
-                  ? AppColors.buttonColor
-                  : Colors.grey, // Color change
-            )
-          : Image.asset(
-              widget.iconData, // Assuming iconData is a string (asset path)
-              width:
-                  AppSize.displayWidth(context) * 0.055, // Set the image size
-              height:
-                  AppSize.displayWidth(context) * 0.055, // Set the image size
-              color: widget.isSelected
-                  ? AppColors.buttonColor
-                  : Colors.grey, // Color change
-            ),
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          child: Icon(
+            widget.iconData,
+            size: AppSize.displayHeight(context) * 0.03,
+            color: widget.isSelected
+                ? AppColors.buttonColor
+                : Colors.grey.withOpacity(0.7 - (_colorAnimation.value * 0.3)),
+          ),
+        );
+      },
     );
   }
 
