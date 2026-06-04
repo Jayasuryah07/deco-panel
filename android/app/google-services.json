@@ -1,0 +1,78 @@
+{
+  "project_info": {
+    "project_number": "872125002397",
+    "project_id": "deco-panel",
+    "storage_bucket": "deco-panel.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:872125002397:android:35d6af0685296fe640da74",
+        "android_client_info": {
+          "package_name": "com.deco.decoapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "872125002397-6kejifohk1ke6gma41n93d5pf79oupm8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.deco.decoapp",
+            "certificate_hash": "c4b498cea1cd7b6b093f426062de2d910db3ff61"
+          }
+        },
+        {
+          "client_id": "872125002397-n7imgpe2d33hfar7gscklf28572d94q8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.deco.decoapp",
+            "certificate_hash": "48d1b9610f94dfb8c857bca70c9d71b555cd76c4"
+          }
+        },
+        {
+          "client_id": "872125002397-sh74ia92tnc8fk1opvi1nd092pts9fe7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.deco.decoapp",
+            "certificate_hash": "80bdc539bb062c2d87864f82d5f4d9b0113c5711"
+          }
+        },
+        {
+          "client_id": "872125002397-skl8fsqdlbe9nksilsn2mq7ms70ifjg5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.deco.decoapp",
+            "certificate_hash": "61e19ed390293659f8d91561b50eb448293212dc"
+          }
+        },
+        {
+          "client_id": "872125002397-vs703ckf2ifv2tqv43uf6s1nrm3acisn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBal17y1PxbqIAM7jl5AlPTnM5AXibiVI0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "872125002397-vs703ckf2ifv2tqv43uf6s1nrm3acisn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "872125002397-7pb12orh5ia795p3rd0q21bcstbil040.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.deco.decoapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
