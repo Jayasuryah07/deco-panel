@@ -2,7 +2,7 @@ name: deco_flutter_app
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 10.0.0+10
+version: 10.0.0+11
 
 environment:
   sdk: '>=3.3.4 <4.0.0'
@@ -40,6 +40,7 @@ dependencies:
   lottie: ^3.1.2
   webview_flutter: ^4.8.0
   flutter_plugin_android_lifecycle: ^2.0.20
+  new_version_plus: ^1.0.1
 
 dev_dependencies:
   flutter_test:

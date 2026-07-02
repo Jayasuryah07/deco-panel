@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:new_version_plus/new_version_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Controller/bottom_nav_controller.dart';
@@ -17,13 +18,44 @@ import '../../Util/custom/custom_toast.dart';
 import 'component/category_widget.dart';
 import 'component/slider.dart';
 
-class HomeScreen extends GetView<BottomNavController> {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  bool _showUpdateBar = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkForUpdate();
+    });
+  }
+
+  Future<void> _checkForUpdate() async {
+    final newVersion = NewVersionPlus(
+      androidId: "com.deco.decoapp",
+    );
+
+    final status = await newVersion.getVersionStatus();
+
+    if (status == null) return;
+
+    if (status.canUpdate && mounted) {
+      setState(() {
+        _showUpdateBar = true;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => Scaffold(
+    return GetBuilder<BottomNavController>(
+      builder: (controller) => Scaffold(
         backgroundColor: AppColors.bgColor,
         body: SingleChildScrollView(
           child: Column(
